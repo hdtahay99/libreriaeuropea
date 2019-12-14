@@ -13,7 +13,7 @@
                             <i class="icon-plus"></i>&nbsp;Nuevo
                         </button>
                         <button type="button" @click="cargarPdf()" class="btn btn-info" >
-                            <i class="icon-doc"></i>&nbsp;Imprimir Reporte
+                            <i class="icon-doc"></i>&nbsp;Generar Reporte
                         </button>
                     </div>
                     <div class="card-body">
