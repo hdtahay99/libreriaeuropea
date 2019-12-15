@@ -30,11 +30,11 @@
 
                             <div class="col-md-6">
                                 <div class="input-group">
-                                    <select class="form-control col-md-6" v-model="categoriaidpag">
+                                    <select @click="listarProductoCategoria(1, buscar, criterio)" class="form-control col-md-6" v-model="categoriaidpag">
                                         <option value="0" disabled>Seleccione</option>
                                         <option v-for="categorias in arrayCategoriaPaginate" :key="categorias.categoriaid" :value="categorias.categoriaid" v-text="categorias.categoria_nombre"></option>
                                     </select>
-                                    <button type="submit" @click="listarProducto(1,buscar,criterio)" class="btn btn-primary"><i class="fa fa-search"></i> Buscar</button>
+                                    <button type="submit" @click="listarProducto(1,buscar,criterio)" class="btn btn-primary"><i class="fa fa-search"></i> Limpiar</button>
                                 </div>
                             </div>
                         </div>
@@ -298,6 +298,12 @@
                 });
             },
 
+            limpiarProductoCategoria(){
+                this.categoriaidpag = 0;
+                this.listarProducto();
+            }
+            ,
+
             listarProductoCategoria(page, buscar, criterio){
                 if(parseInt(buscar)){
                     criterio = 'producto_barra';
@@ -307,7 +313,7 @@
                     criterio = 'producto_nombre';
                 }
                 let me = this;
-                var url = this.ruta + '/productoCat?page=' + page + '&buscar=' + buscar + '&criterio=' + criterio + '&categoriaid=' + categoriaidpag;
+                var url = this.ruta + '/productoCat?page=' + page + '&buscar=' + buscar + '&criterio=' + criterio + '&categoriaid=' + this.categoriaidpag;
                 axios.get(url)
                 .then(function (response) {
                     var respuesta = response.data;

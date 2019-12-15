@@ -4689,6 +4689,10 @@ __webpack_require__.r(__webpack_exports__);
         console.log(error);
       });
     },
+    limpiarProductoCategoria: function limpiarProductoCategoria() {
+      this.categoriaidpag = 0;
+      this.listarProducto();
+    },
     listarProductoCategoria: function listarProductoCategoria(page, buscar, criterio) {
       if (parseInt(buscar)) {
         criterio = 'producto_barra';
@@ -4697,7 +4701,7 @@ __webpack_require__.r(__webpack_exports__);
       }
 
       var me = this;
-      var url = this.ruta + '/productoCat?page=' + page + '&buscar=' + buscar + '&criterio=' + criterio + '&categoriaid=' + categoriaidpag;
+      var url = this.ruta + '/productoCat?page=' + page + '&buscar=' + buscar + '&criterio=' + criterio + '&categoriaid=' + this.categoriaidpag;
       axios.get(url).then(function (response) {
         var respuesta = response.data;
         me.arrayProducto = respuesta.productos.data;
@@ -56194,7 +56198,7 @@ var render = function() {
             },
             [
               _c("i", { staticClass: "icon-doc" }),
-              _vm._v(" Imprimir Reporte\n                       ")
+              _vm._v(" Generar Reporte\n                       ")
             ]
           )
         ]),
@@ -56297,6 +56301,13 @@ var render = function() {
                     ],
                     staticClass: "form-control col-md-6",
                     on: {
+                      click: function($event) {
+                        return _vm.listarProductoCategoria(
+                          1,
+                          _vm.buscar,
+                          _vm.criterio
+                        )
+                      },
                       change: function($event) {
                         var $$selectedVal = Array.prototype.filter
                           .call($event.target.options, function(o) {
@@ -56341,7 +56352,7 @@ var render = function() {
                       }
                     }
                   },
-                  [_c("i", { staticClass: "fa fa-search" }), _vm._v(" Buscar")]
+                  [_c("i", { staticClass: "fa fa-search" }), _vm._v(" Limpiar")]
                 )
               ])
             ])
