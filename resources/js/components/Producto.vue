@@ -34,7 +34,7 @@
                                         <option value="0" disabled>Seleccione</option>
                                         <option v-for="categorias in arrayCategoriaPaginate" :key="categorias.categoriaid" :value="categorias.categoriaid" v-text="categorias.categoria_nombre"></option>
                                     </select>
-                                    <button type="submit" @click="listarProducto(1,buscar,criterio)" class="btn btn-primary"><i class="fa fa-search"></i> Limpiar</button>
+                                    <button type="submit" @click="limpiarProductoCategoria()" class="btn btn-danger"><i class="fas fa-broom"></i> Limpiar</button>
                                 </div>
                             </div>
                         </div>
@@ -109,8 +109,8 @@
                 <!-- Fin ejemplo de tabla Listado -->
             </div>
             <!--Inicio del modal agregar/actualizar-->
-            <div class="modal fade"  tabindex="-1" :class="{'mostrar' : modal}" role="dialog" aria-labelledby="myModalLabel" style="display: none;" aria-hidden="true">
-                <div class="modal-dialog modal-primary modal-lg" role="document">
+            <div class="modal fade"  tabindex="-1" :class="{'mostrar' : modal}"  role="dialog" aria-labelledby="myModalLabel" style="display: none;" aria-hidden="true">
+                <div class="modal-dialog  modal-dialog modal-dialog-centered modal-primary modal-lg" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h4 class="modal-title" v-text="tituloModal"></h4>
@@ -300,7 +300,7 @@
 
             limpiarProductoCategoria(){
                 this.categoriaidpag = 0;
-                this.listarProducto();
+                this.listarProducto(1, this.buscar, this.criterio);
             }
             ,
 
@@ -358,7 +358,12 @@
             cambiarPagina(page, buscar, criterio){
                 let me = this;
                 me.pagination.current_page = page;
-                me.listarProducto(page, buscar, criterio);
+                if(me.categoriaidpag > 0){
+                    me.listarProductoCategoria(page, buscar, criterio);
+                }
+                else {
+                    me.listarProducto(page, buscar, criterio);
+                }
             },
 
             registrarProducto()
@@ -404,9 +409,9 @@
                 let me = this;
                 axios.post(this.ruta + '/producto/actualizar',data).then(function (response){
                     me.cerrarModal();
-                    me.listarProducto(1,'','nombre');
+                    me.listarProducto(me.pagination.current_page, me.buscar,me.criterio);
                 }).catch(function (error){
-                    console.log(error.response);
+                    console.log(error);
                 });
             },
 
@@ -433,7 +438,7 @@
                     axios.put(this.ruta + '/producto/desactivar',{
                         'productoid' : id
                     }).then(function (response){
-                        me.listarProducto(1,'','nombre');
+                        me.listarProducto(me.pagination.current_page, me.buscar,me.criterio);
                                             
                         swalWithBootstrapButtons.fire(
                         'El producto ha sido desactivado',
@@ -473,7 +478,7 @@
                     axios.put(this.ruta + '/producto/activar',{
                         'productoid' : id
                     }).then(function (response){
-                        me.listarProducto(1,'','nombre');
+                        me.listarProducto(me.pagination.current_page, me.buscar,me.criterio);
                                             
                         swalWithBootstrapButtons.fire(
                         'El producto ha sido restaurado',
@@ -573,12 +578,11 @@
 <style>
     .modal-content{
         width : 100% !important;
-        position: absolute !important;
+        position: fixed !important;
     }
     .mostrar{
-        display: list-item !important;
         opacity: 1 !important;
-        position: absolute !important;
+        position: fixed !important;
         background-color: #3c29297a !important;
     }
     .div-error{

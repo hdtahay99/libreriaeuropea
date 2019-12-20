@@ -4691,7 +4691,7 @@ __webpack_require__.r(__webpack_exports__);
     },
     limpiarProductoCategoria: function limpiarProductoCategoria() {
       this.categoriaidpag = 0;
-      this.listarProducto();
+      this.listarProducto(1, this.buscar, this.criterio);
     },
     listarProductoCategoria: function listarProductoCategoria(page, buscar, criterio) {
       if (parseInt(buscar)) {
@@ -4736,7 +4736,12 @@ __webpack_require__.r(__webpack_exports__);
     cambiarPagina: function cambiarPagina(page, buscar, criterio) {
       var me = this;
       me.pagination.current_page = page;
-      me.listarProducto(page, buscar, criterio);
+
+      if (me.categoriaidpag > 0) {
+        me.listarProductoCategoria(page, buscar, criterio);
+      } else {
+        me.listarProducto(page, buscar, criterio);
+      }
     },
     registrarProducto: function registrarProducto() {
       if (this.validarProducto()) {
@@ -4782,9 +4787,9 @@ __webpack_require__.r(__webpack_exports__);
       var me = this;
       axios.post(this.ruta + '/producto/actualizar', data).then(function (response) {
         me.cerrarModal();
-        me.listarProducto(1, '', 'nombre');
+        me.listarProducto(me.pagination.current_page, me.buscar, me.criterio);
       }).catch(function (error) {
-        console.log(error.response);
+        console.log(error);
       });
     },
     desactivarProducto: function desactivarProducto(id) {
@@ -4810,7 +4815,7 @@ __webpack_require__.r(__webpack_exports__);
           axios.put(_this.ruta + '/producto/desactivar', {
             'productoid': id
           }).then(function (response) {
-            me.listarProducto(1, '', 'nombre');
+            me.listarProducto(me.pagination.current_page, me.buscar, me.criterio);
             swalWithBootstrapButtons.fire('El producto ha sido desactivado');
           }).catch(function (error) {
             console.log(error);
@@ -4842,7 +4847,7 @@ __webpack_require__.r(__webpack_exports__);
           axios.put(_this2.ruta + '/producto/activar', {
             'productoid': id
           }).then(function (response) {
-            me.listarProducto(1, '', 'nombre');
+            me.listarProducto(me.pagination.current_page, me.buscar, me.criterio);
             swalWithBootstrapButtons.fire('El producto ha sido restaurado');
           }).catch(function (error) {
             console.log(error);
@@ -8756,7 +8761,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.modal-content{\n    width : 100% !important;\n    position: absolute !important;\n}\n.mostrar{\n    display: list-item !important;\n    opacity: 1 !important;\n    position: absolute !important;\n    background-color: #3c29297a !important;\n}\n.div-error{\n    display: flex;\n    justify-content: center;\n}\n.text-error{\n    color : red !important;\n    font-weight: bold;\n}\n", ""]);
+exports.push([module.i, "\n.modal-content{\n    width : 100% !important;\n    position: fixed !important;\n}\n.mostrar{\n    opacity: 1 !important;\n    position: fixed !important;\n    background-color: #3c29297a !important;\n}\n.div-error{\n    display: flex;\n    justify-content: center;\n}\n.text-error{\n    color : red !important;\n    font-weight: bold;\n}\n", ""]);
 
 // exports
 
@@ -56344,15 +56349,15 @@ var render = function() {
                 _c(
                   "button",
                   {
-                    staticClass: "btn btn-primary",
+                    staticClass: "btn btn-danger",
                     attrs: { type: "submit" },
                     on: {
                       click: function($event) {
-                        return _vm.listarProducto(1, _vm.buscar, _vm.criterio)
+                        return _vm.limpiarProductoCategoria()
                       }
                     }
                   },
-                  [_c("i", { staticClass: "fa fa-search" }), _vm._v(" Limpiar")]
+                  [_c("i", { staticClass: "fas fa-broom" }), _vm._v(" Limpiar")]
                 )
               ])
             ])
@@ -56595,7 +56600,8 @@ var render = function() {
         _c(
           "div",
           {
-            staticClass: "modal-dialog modal-primary modal-lg",
+            staticClass:
+              "modal-dialog  modal-dialog modal-dialog-centered modal-primary modal-lg",
             attrs: { role: "document" }
           },
           [
