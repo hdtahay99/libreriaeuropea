@@ -3864,6 +3864,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['ruta'],
@@ -3922,6 +3926,7 @@ __webpack_require__.r(__webpack_exports__);
       cliente_direccion: '',
       cliente_nombre: '',
       cliente_apellido: '',
+      editar: 0,
       bandera: null
     };
   },
@@ -4189,28 +4194,65 @@ __webpack_require__.r(__webpack_exports__);
         });
         this.modal = 0;
         var me = this;
-        axios.post(this.ruta + '/factura/registrar', {
-          'clienteid': this.clienteid,
-          'factura_total': this.factura_total,
-          'factura_pago': this.factura_pago,
-          'data': this.arrayDetalle
-        }).then(function (response) {
-          me.listado = 1;
-          me.listarFactura(1, '', '');
-          me.clienteid = 0;
-          me.factura_total = 0.0;
-          me.factura_pago = 0.0;
-          me.productoid = 0;
-          me.producto_nombre = '';
-          me.cantidad = 0;
-          me.producto_existencia = 0;
-          me.producto_pventa = 0;
-          me.producto_barra = '';
-          me.arrayDetalle = [];
-          window.open(this.ruta + '/factura/pdf/' + response.data.facturaid + ',' + '_blank');
-        }).catch(function (error) {
-          console.log(error.response);
-        });
+
+        if (me.editar == 1) {
+          axios.post(this.ruta + '/factura/registrar2', {
+            'cliente_nit': this.cliente_nit,
+            'cliente_nombre': this.cliente_nombre,
+            'cliente_apellido': this.cliente_apellido,
+            'cliente_direccion': this.cliente_direccion,
+            'factura_total': this.factura_total,
+            'factura_pago': this.factura_pago,
+            'data': this.arrayDetalle
+          }).then(function (response) {
+            me.listado = 0;
+            me.editar = 0;
+            me.bandera = true;
+            me.listarFactura(1, '', '');
+            me.clienteid = 0;
+            me.cliente_nombre = '';
+            me.cliente_apellido = '';
+            me.cliente_direccion = '';
+            me.cliente_nit = 'c/f';
+            me.buscarCliente(me.cliente_nit);
+            document.getElementById('nit').readOnly = false;
+            me.factura_total = 0.0;
+            me.factura_pago = 0.0;
+            me.productoid = 0;
+            me.producto_nombre = '';
+            me.cantidad = 0;
+            me.producto_existencia = 0;
+            me.producto_pventa = 0;
+            me.producto_barra = '';
+            me.arrayDetalle = [];
+            window.open(this.ruta + '/factura/pdf/' + response.data.facturaid + ',' + '_blank');
+          }).catch(function (error) {
+            console.log(error.response);
+          });
+        } else {
+          axios.post(this.ruta + '/factura/registrar', {
+            'clienteid': this.clienteid,
+            'factura_total': this.factura_total,
+            'factura_pago': this.factura_pago,
+            'data': this.arrayDetalle
+          }).then(function (response) {
+            me.listado = 0;
+            me.listarFactura(1, '', '');
+            me.clienteid = 0;
+            me.factura_total = 0.0;
+            me.factura_pago = 0.0;
+            me.productoid = 0;
+            me.producto_nombre = '';
+            me.cantidad = 0;
+            me.producto_existencia = 0;
+            me.producto_pventa = 0;
+            me.producto_barra = '';
+            me.arrayDetalle = [];
+            window.open(this.ruta + '/factura/pdf/' + response.data.facturaid + ',' + '_blank');
+          }).catch(function (error) {
+            console.log(error.response);
+          });
+        }
       }
     },
     validarFactura: function validarFactura() {
@@ -4228,6 +4270,15 @@ __webpack_require__.r(__webpack_exports__);
       if (this.arrayDetalle.length <= 0) this.errorMostrarMsjFactura.push("Ingrese productos al detalle.");
       if (this.errorMostrarMsjFactura.length) this.errorFactura = 1;
       return this.errorFactura;
+    },
+    modificarCF: function modificarCF() {
+      var me = this;
+      me.editar = 1;
+      me.cliente_nombre = '';
+      me.cliente_apellido = '';
+      me.cliente_direccion = '';
+      document.getElementById('nit').readOnly = true;
+      me.bandera = false;
     },
     mostrarDetalle: function mostrarDetalle() {
       var me = this;
@@ -54732,41 +54783,60 @@ var render = function() {
             ? [
                 _c("div", { staticClass: "card-body" }, [
                   _c("div", { staticClass: "form-group row border" }, [
-                    _c("div", { staticClass: "col-md-9" }, [
+                    _c("div", { staticClass: "col-md-6" }, [
                       _c("div", { staticClass: "form-group" }, [
                         _c("label", { attrs: { for: "" } }, [
                           _vm._v("Cliente(*)")
                         ]),
                         _vm._v(" "),
-                        _c("input", {
-                          directives: [
-                            {
-                              name: "model",
-                              rawName: "v-model",
-                              value: _vm.cliente_nit,
-                              expression: "cliente_nit"
-                            }
-                          ],
-                          staticClass: "form-control",
-                          staticStyle: { width: "50%" },
-                          attrs: {
-                            type: "text",
-                            id: "nit",
-                            placeholder: "Ingrese el nit del cliente"
-                          },
-                          domProps: { value: _vm.cliente_nit },
-                          on: {
-                            keyup: function($event) {
-                              return _vm.buscarCliente(_vm.cliente_nit)
-                            },
-                            input: function($event) {
-                              if ($event.target.composing) {
-                                return
+                        _c("div", { staticClass: "form-inline" }, [
+                          _c("input", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.cliente_nit,
+                                expression: "cliente_nit"
                               }
-                              _vm.cliente_nit = $event.target.value
+                            ],
+                            staticClass: "form-control",
+                            staticStyle: { width: "50%" },
+                            attrs: {
+                              type: "text",
+                              id: "nit",
+                              placeholder: "Ingrese el nit del cliente"
+                            },
+                            domProps: { value: _vm.cliente_nit },
+                            on: {
+                              keyup: function($event) {
+                                return _vm.buscarCliente(_vm.cliente_nit)
+                              },
+                              input: function($event) {
+                                if ($event.target.composing) {
+                                  return
+                                }
+                                _vm.cliente_nit = $event.target.value
+                              }
                             }
-                          }
-                        }),
+                          }),
+                          _c("br"),
+                          _vm._v(" "),
+                          _vm.editar == 0
+                            ? _c(
+                                "button",
+                                {
+                                  staticClass: "btn btn-warning",
+                                  attrs: { type: "submit" },
+                                  on: {
+                                    click: function($event) {
+                                      return _vm.modificarCF()
+                                    }
+                                  }
+                                },
+                                [_c("i", { staticClass: "icon-pencil" })]
+                              )
+                            : _vm._e()
+                        ]),
                         _vm._v(" "),
                         _c("input", {
                           directives: [
@@ -54795,6 +54865,7 @@ var render = function() {
                             }
                           }
                         }),
+                        _c("br"),
                         _vm._v(" "),
                         _c("input", {
                           directives: [
@@ -54823,6 +54894,7 @@ var render = function() {
                             }
                           }
                         }),
+                        _c("br"),
                         _vm._v(" "),
                         _c("input", {
                           directives: [

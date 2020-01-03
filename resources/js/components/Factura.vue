@@ -91,12 +91,16 @@
                     <template v-else-if="listado==0">
                         <div class="card-body">
                             <div class="form-group row border">
-                                <div class="col-md-9">
+                                
+                                <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="">Cliente(*)</label>
-                                        <input type="text" style="width: 50%" id="nit" v-model="cliente_nit" @keyup="buscarCliente(cliente_nit)" class="form-control" placeholder="Ingrese el nit del cliente">
-                                        <input :disabled="bandera ? true : false" type="text" style="width: 50%" id="cnombre" v-model="cliente_nombre"  class="form-control" placeholder="Ingrese el nombre del cliente">
-                                        <input :disabled="bandera ? true : false" type="text" style="width: 50%" id="capellido" v-model="cliente_apellido"  class="form-control" placeholder="Ingrese el apellido del cliente">
+                                        <div class="form-inline">
+                                            <input type="text" style="width: 50%" id="nit" v-model="cliente_nit" @keyup="buscarCliente(cliente_nit)" class="form-control" placeholder="Ingrese el nit del cliente"><br>
+                                            <button v-if="editar==0" type="submit" @click="modificarCF()" class="btn btn-warning"><i class="icon-pencil"></i> </button>
+                                        </div>
+                                        <input :disabled="bandera ? true : false" type="text" style="width: 50%" id="cnombre" v-model="cliente_nombre"  class="form-control" placeholder="Ingrese el nombre del cliente"><br>
+                                        <input :disabled="bandera ? true : false" type="text" style="width: 50%" id="capellido" v-model="cliente_apellido"  class="form-control" placeholder="Ingrese el apellido del cliente"><br>
                                         <input :disabled="bandera ? true : false" type="text" style="width: 50%" id="cdireccion" v-model="cliente_direccion"  class="form-control" placeholder="Ingrese la dirección del cliente">
                                     </div>
                                 </div>
@@ -459,6 +463,7 @@
                 cliente_direccion: '',
                 cliente_nombre: '',
                 cliente_apellido: '',
+                editar: 0,
                 bandera : null,
             }
         },
@@ -727,30 +732,66 @@
                     
                     let me = this;
 
-                    axios.post(this.ruta + '/factura/registrar',{
-                        'clienteid': this.clienteid,
-                        'factura_total': this.factura_total,
-                        'factura_pago' : this.factura_pago,
-                        'data': this.arrayDetalle
+                    if (me.editar == 1){                    
+                        axios.post(this.ruta + '/factura/registrar2', {
+                            'cliente_nit': this.cliente_nit,
+                            'cliente_nombre': this.cliente_nombre,
+                            'cliente_apellido': this.cliente_apellido,
+                            'cliente_direccion': this.cliente_direccion,
+                            'factura_total': this.factura_total,
+                            'factura_pago' : this.factura_pago,
+                            'data': this.arrayDetalle
+                        }).then(function (response) {
+                            me.listado=0;
+                            me.editar = 0;
+                            me.bandera = true;
+                            me.listarFactura(1,'','');
+                            me.clienteid=0;
+                            me.cliente_nombre = '';
+                            me.cliente_apellido = '';
+                            me.cliente_direccion = '';
+                            me.cliente_nit = 'c/f';
+                            me.buscarCliente(me.cliente_nit);
+                            document.getElementById('nit').readOnly = false;
+                            me.factura_total=0.0;
+                            me.factura_pago=0.0;
+                            me.productoid=0;
+                            me.producto_nombre='';
+                            me.cantidad=0;
+                            me.producto_existencia=0;
+                            me.producto_pventa = 0;
+                            me.producto_barra = '';
+                            me.arrayDetalle=[];
+                            window.open(this.ruta + '/factura/pdf/'+response.data.facturaid+','+'_blank');
+                        }).catch(function (error){
+                            console.log(error.response);
+                        });
+                    } else {
+                        axios.post(this.ruta + '/factura/registrar',{
+                            'clienteid': this.clienteid,
+                            'factura_total': this.factura_total,
+                            'factura_pago' : this.factura_pago,
+                            'data': this.arrayDetalle
 
-                    }).then(function (response) {
-                        me.listado=1;
-                        me.listarFactura(1,'','');
-                        me.clienteid=0;
-                        me.factura_total=0.0;
-                        me.factura_pago=0.0;
-                        me.productoid=0;
-                        me.producto_nombre='';
-                        me.cantidad=0;
-                        me.producto_existencia=0;
-                        me.producto_pventa = 0;
-                        me.producto_barra = '';
-                        me.arrayDetalle=[];
-                        window.open(this.ruta + '/factura/pdf/'+response.data.facturaid+','+'_blank');
+                        }).then(function (response) {
+                            me.listado=0;
+                            me.listarFactura(1,'','');
+                            me.clienteid=0;
+                            me.factura_total=0.0;
+                            me.factura_pago=0.0;
+                            me.productoid=0;
+                            me.producto_nombre='';
+                            me.cantidad=0;
+                            me.producto_existencia=0;
+                            me.producto_pventa = 0;
+                            me.producto_barra = '';
+                            me.arrayDetalle=[];
+                            window.open(this.ruta + '/factura/pdf/'+response.data.facturaid+','+'_blank');
 
-                    }).catch(function (error) {
-                        console.log(error.response);
-                    });
+                        }).catch(function (error) {
+                            console.log(error.response);
+                        });
+                    }
                 }
             },
             validarFactura(){
@@ -773,6 +814,15 @@
                 if (this.errorMostrarMsjFactura.length) this.errorFactura = 1;
 
                 return this.errorFactura;
+            },
+            modificarCF(){
+                let me = this;
+                me.editar = 1;
+                me.cliente_nombre = '';
+                me.cliente_apellido = '';
+                me.cliente_direccion = '';
+                document.getElementById('nit').readOnly = true;
+                me.bandera = false;
             },
             mostrarDetalle(){
                 let me=this;

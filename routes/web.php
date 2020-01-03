@@ -36,6 +36,7 @@ Route::group(['middleware' => ['auth']], function(){
         Route::post('/cliente/registrar', 'ClienteController@store');
         Route::put('/cliente/actualizar', 'ClienteController@update');
         Route::get('/cliente/selectCliente', 'ClienteController@selectCliente');
+        Route::get('/cliente/buscarCliente', 'ClienteController@buscarCliente');
         Route::get('/factura', 'FacturaController@index');
         Route::post('/factura/registrar', 'FacturaController@store');
         Route::put('/factura/desactivar', 'FacturaController@desactivar');
@@ -87,6 +88,7 @@ Route::group(['middleware' => ['auth']], function(){
 
         Route::get('/factura', 'FacturaController@index');
         Route::post('/factura/registrar', 'FacturaController@store');
+        Route::post('/factura/registrar2', 'FacturaController@store2');
         Route::put('/factura/desactivar', 'FacturaController@desactivar');
         Route::get('/factura/obtenerCabecera', 'FacturaController@obtenerCabecera');
         Route::get('/factura/obtenerDetalles', 'FacturaController@obtenerDetalles');
