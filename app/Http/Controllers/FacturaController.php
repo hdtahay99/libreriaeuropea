@@ -25,7 +25,7 @@ class FacturaController extends Controller
             'facturas.factura_total','facturas.factura_pago',
             'facturas.factura_estado','facturas.condicion','empleados.empleado_nombre','empleados.empleado_apellido',
             'clientes.cliente_nombre','clientes.cliente_apellido','clientes.cliente_nit','clientes.cliente_direccion')
-            ->orderBy('facturas.facturaid','desc')->paginate(3);
+            ->orderBy('facturas.facturaid','desc')->paginate(8);
         }
         else{
             if($criterio == 'cliente_nit'){
@@ -36,7 +36,7 @@ class FacturaController extends Controller
                 'facturas.factura_estado','facturas.condicion','empleados.empleado_nombre','empleados.empleado_apellido',
                 'clientes.cliente_nombre','clientes.cliente_apellido','clientes.cliente_nit','clientes.cliente_direccion')
                 ->where('clientes.cliente_nit','like','%'.$buscar.'%')
-                ->orderBy('facturas.facturaid','desc')->paginate(3);
+                ->orderBy('facturas.facturaid','desc')->paginate(8);
             }
             else{
                 $facturas = Factura::join('empleados', 'facturas.empleadoid','=','empleados.empleadoid')
@@ -46,7 +46,7 @@ class FacturaController extends Controller
                 'facturas.factura_estado','facturas.condicion','empleados.empleado_nombre','empleados.empleado_apellido',
                 'clientes.cliente_nombre','clientes.cliente_apellido','clientes.cliente_nit','clientes.cliente_direccion')
                 ->where('facturas.'.$criterio, 'like', '%'.$buscar.'%')
-                ->orderBy('facturas.facturaid','desc')->paginate(3);
+                ->orderBy('facturas.facturaid','desc')->paginate(8);
             }
         }
 

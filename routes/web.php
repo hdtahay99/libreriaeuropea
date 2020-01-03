@@ -73,6 +73,8 @@ Route::group(['middleware' => ['auth']], function(){
         Route::put('/cliente/desactivar', 'ClienteController@desactivar');
         Route::put('/cliente/activar', 'ClienteController@activar');
         Route::get('/cliente/selectCliente', 'ClienteController@selectCliente');
+        Route::get('/cliente/buscarCliente', 'ClienteController@buscarCliente');
+
     
         Route::get('/rol', 'RolController@index');
         Route::get('/rol/selectRol', 'RolController@selectRol');

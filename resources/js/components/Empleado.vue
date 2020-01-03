@@ -10,9 +10,6 @@
                 <div class="card">
                     <div class="card-header">
                         <i class="fa fa-align-justify"></i> Empleados
-                        <button type="button" @click="abrirModal('empleado','registrar')" class="btn btn-secondary" >
-                            <i class="icon-plus"></i>&nbsp;Nuevo
-                        </button>
                     </div>
                     <div class="card-body">
                         <div class="form-group row">

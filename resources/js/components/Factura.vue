@@ -1,4 +1,4 @@
-<template>
+<template onload="onLoadBody">
             <main class="main">
             <!-- Breadcrumb -->
             <ol class="breadcrumb">
@@ -94,16 +94,10 @@
                                 <div class="col-md-9">
                                     <div class="form-group">
                                         <label for="">Cliente(*)</label>
-                                        <v-select
-                                            :on-search="selectCliente"
-                                            :filterable="false"
-                                            label="nombre"
-                                            :options="arrayCliente"
-                                            placeholder="Buscar Cliente..."
-                                            :onChange="getDatosCliente"                                         
-                                        >
-
-                                        </v-select>
+                                        <input type="text" style="width: 50%" id="nit" v-model="cliente_nit" @keyup="buscarCliente(cliente_nit)" class="form-control" placeholder="Ingrese el nit del cliente">
+                                        <input :disabled="bandera ? true : false" type="text" style="width: 50%" id="cnombre" v-model="cliente_nombre"  class="form-control" placeholder="Ingrese el nombre del cliente">
+                                        <input :disabled="bandera ? true : false" type="text" style="width: 50%" id="capellido" v-model="cliente_apellido"  class="form-control" placeholder="Ingrese el apellido del cliente">
+                                        <input :disabled="bandera ? true : false" type="text" style="width: 50%" id="cdireccion" v-model="cliente_direccion"  class="form-control" placeholder="Ingrese la dirección del cliente">
                                     </div>
                                 </div>
 
@@ -123,8 +117,8 @@
                                         <label>Producto <span style="color:red;" v-show="productoid==0">(*Seleccione)</span></label>
                                         <div class="form-inline">
                                             <input type="text" class="form-control" v-model="producto_barra" @keyup.enter="buscarProducto()" placeholder="Ingrese producto">
-                                            <button @click="abrirModal(1)" class="btn btn-primary">...</button>
-                                            <input type="text" readonly class="form-control" v-model="producto_nombre">
+                                            <button @click="abrirModal(1)"  class="btn btn-primary">...</button>
+                                            <input type="text" style="width: 50%" readonly class="form-control" v-model="producto_nombre">
                                         </div>                                    
                                     </div>
                                 </div>
@@ -261,7 +255,8 @@
                                         <thead>
                                             <tr>
                                                 <th>Producto</th>
-                                                <th>Precio</th>
+                                                <th>Precio Inventario</th>
+                                                <th>Precio Venta</th>
                                                 <th>Cantidad</th>
                                                 <th>Subtotal</th>
                                             </tr>
@@ -272,14 +267,16 @@
                                                 </td>
                                                 <td v-text="detalle.producto_pventa">
                                                 </td>
+                                                <td v-text="detalle.detalle_monto">
+                                                </td>
                                                 <td v-text="detalle.detalle_cantidad">
                                                 </td>
                                                 <td>
-                                                    {{detalle.producto_pventa*detalle.detalle_cantidad}}
+                                                    {{detalle.detalle_monto*detalle.detalle_cantidad}}
                                                 </td>
                                             </tr>
                                             <tr style="background-color: #CEECF5;">
-                                                <td colspan="3" align="right"><strong>Total Neto:</strong></td>
+                                                <td colspan="4" align="right"><strong>Total Neto:</strong></td>
                                                 <td>Q {{total}}</td>
                                             </tr>
                                         </tbody>
@@ -306,7 +303,7 @@
                 <!-- Fin ejemplo de tabla Listado -->
             </div>
             <!--Inicio del modal agregar/actualizar-->
-            <div class="modal fade" tabindex="-1" :class="{'mostrar' : modal}" role="dialog" aria-labelledby="myModalLabel" style="display: none;" aria-hidden="true">
+            <div class="modal fade" id="myModal1" tabindex="-1" :class="{'mostrar' : modal}" role="dialog" aria-labelledby="myModalLabel" style="display: none;" aria-hidden="true">
                 <div class="modal-dialog modal-primary modal-lg" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -317,7 +314,7 @@
                         </div>
 
                         <template v-if="modal == 1">
-                            <div class="modal-body">
+                            <div onfocus="enfocar()" class="modal-body">
                                 <div class="form-group row">
                                     <div class="col-md-6">
                                         <div class="input-group">
@@ -325,7 +322,7 @@
                                             <option value="producto_nombre">Nombre</option>
                                             <option value="producto_barra">Código</option>
                                             </select>
-                                            <input type="text" v-model="buscarA" @keyup.enter="listarProducto(1,buscarA,criterioA)" class="form-control" placeholder="Texto a buscar">
+                                            <input id="textareaID1" type="text" v-model="buscarA" @keyup="listarProducto(1,buscarA,criterioA)" class="form-control" placeholder="Ingrese el nombre del producto o su código">
                                             <button type="submit" @click="listarProducto(1,buscarA,criterioA)" class="btn btn-primary"><i class="fa fa-search"></i> Buscar</button>
                                         </div>
                                     </div>
@@ -422,6 +419,7 @@
                 factura_pago : 0.0,
                 arrayFactura : [],
                 arrayCliente: [],
+                consumidor_final: null,
                 arrayDetalle : [],
                 listado:1,
                 modal : 0,
@@ -456,7 +454,12 @@
                 producto_nombre: '',
                 producto_pventa: 0,
                 producto_existencia : 0,
-                cantidad : 0
+                cantidad : 0,
+                cliente_nit : '',
+                cliente_direccion: '',
+                cliente_nombre: '',
+                cliente_apellido: '',
+                bandera : null,
             }
         },
         components: {
@@ -543,9 +546,35 @@
                     let respuesta = response.data;
                     q: search
                     me.arrayCliente=respuesta.clientes;
+                    me.consumidor_final = me.arrayCliente.find(clientes => clientes.cliente_nit === "c/f");
                     loading(false)
                 })
                 .catch(function (error) {
+                    console.log(error);
+                });
+            },
+            buscarCliente(nit){
+                let me = this;
+
+                var url = this.ruta + '/cliente/buscarCliente/?cliente_nit='+nit;
+                axios.get(url).then(function (response) {
+                    var respuesta = response.data;
+                    if (response.data.cliente.length != 0){
+                        me.cliente_nombre = respuesta.cliente[0].cliente_nombre;
+                        me.cliente_apellido = respuesta.cliente[0].cliente_apellido;
+                        me.cliente_direccion = respuesta.cliente[0].cliente_direccion;
+                        me.clienteid = respuesta.cliente[0].clienteid;
+                        me.bandera = true;
+
+                    }
+                    else {
+                        me.cliente_nombre = '';
+                        me.cliente_apellido = '';
+                        me.cliente_direccion = '';
+                        me.clienteid = 0;
+                        me.bandera = false;
+                    }
+                }).catch(function (error) {
                     console.log(error);
                 });
             },
@@ -646,9 +675,6 @@
                     }
                     
                 }
-
-                
-
             },
             agregarDetalleModal(data =[]){
                 let me=this;
@@ -808,7 +834,7 @@
             cerrarModal(){
                 this.modal=0;
                 this.tituloModal='';
-            }, 
+            },
             abrirModal(condicion){
                 if(condicion == 1){
                     this.arrayProducto=[];
@@ -822,7 +848,6 @@
                     this.modal = 2;
                     this.tituloModal = 'Ingrese el monto recibido por el cliente';
                 }               
-
             },
 
             desactivarFactura(id){
@@ -863,10 +888,12 @@
                 ) {
                 }
                 })
-            },
+            }
         },
         mounted() {
             this.listarFactura(1,this.buscar,this.criterio);
+            this.cliente_nit = 'c/f';
+            this.buscarCliente(this.cliente_nit);
         }
     }
 </script>

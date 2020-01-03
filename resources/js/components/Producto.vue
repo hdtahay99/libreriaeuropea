@@ -578,11 +578,12 @@
 <style>
     .modal-content{
         width : 100% !important;
-        position: fixed !important;
+        position: relative !important;
     }
     .mostrar{
+        display: list-item !important;
         opacity: 1 !important;
-        position: fixed !important;
+        position: absolute !important;
         background-color: #3c29297a !important;
     }
     .div-error{

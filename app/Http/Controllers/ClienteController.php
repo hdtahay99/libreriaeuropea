@@ -50,6 +50,15 @@ class ClienteController extends Controller
 
         return ['clientes' => $clientes];
     }
+
+    public function buscarCliente(Request $request)
+    {
+
+        $cliente_nit = $request->cliente_nit;
+        $cliente = Cliente::where('cliente_nit', '=', $cliente_nit)->get();
+
+        return ['cliente' => $cliente];
+    }
     
     public function store(Request $request)
     {
