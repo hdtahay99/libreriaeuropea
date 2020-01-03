@@ -3937,6 +3937,9 @@ __webpack_require__.r(__webpack_exports__);
     isActived: function isActived() {
       return this.pagination.current_page;
     },
+    isActivedM: function isActivedM() {
+      return this.paginationM.current_page;
+    },
     //Calcula los elementos de la paginación
     pagesNumber: function pagesNumber() {
       if (!this.pagination.to) {
@@ -4225,9 +4228,9 @@ __webpack_require__.r(__webpack_exports__);
             me.producto_pventa = 0;
             me.producto_barra = '';
             me.arrayDetalle = [];
-            window.open(this.ruta + '/factura/pdf/' + response.data.facturaid + ',' + '_blank');
+            window.open(me.ruta + '/factura/pdf/' + response.data.facturaid + ',' + '_blank');
           }).catch(function (error) {
-            console.log(error.response);
+            console.log(error.data);
           });
         } else {
           axios.post(this.ruta + '/factura/registrar', {
@@ -4248,9 +4251,9 @@ __webpack_require__.r(__webpack_exports__);
             me.producto_pventa = 0;
             me.producto_barra = '';
             me.arrayDetalle = [];
-            window.open(this.ruta + '/factura/pdf/' + response.data.facturaid + ',' + '_blank');
+            window.open(me.ruta + '/factura/pdf/' + response.data.facturaid + ',' + '_blank');
           }).catch(function (error) {
-            console.log(error.response);
+            alert(error);
           });
         }
       }
@@ -54991,6 +54994,7 @@ var render = function() {
                             ],
                             staticClass: "form-control",
                             attrs: {
+                              id: "buscarpro",
                               type: "text",
                               placeholder: "Ingrese producto"
                             },
@@ -55931,7 +55935,7 @@ var render = function() {
                                       key: page,
                                       staticClass: "page-item",
                                       class: [
-                                        page == _vm.isActived ? "active" : ""
+                                        page == _vm.isActivedM ? "active" : ""
                                       ]
                                     },
                                     [

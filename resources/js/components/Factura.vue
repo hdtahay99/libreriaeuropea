@@ -120,7 +120,7 @@
                                     <div class="form-group">
                                         <label>Producto <span style="color:red;" v-show="productoid==0">(*Seleccione)</span></label>
                                         <div class="form-inline">
-                                            <input type="text" class="form-control" v-model="producto_barra" @keyup.enter="buscarProducto()" placeholder="Ingrese producto">
+                                            <input id="buscarpro" type="text" class="form-control" v-model="producto_barra" @keyup.enter="buscarProducto()" placeholder="Ingrese producto">
                                             <button @click="abrirModal(1)"  class="btn btn-primary">...</button>
                                             <input type="text" style="width: 50%" readonly class="form-control" v-model="producto_nombre">
                                         </div>                                    
@@ -368,7 +368,7 @@
                                         <li class="page-item" v-if="paginationM.current_page > 1">
                                             <a class="page-link" href="#" @click.prevent="cambiarPaginaM(paginationM.current_page - 1,buscarA,criterioA)">Ant</a>
                                         </li>
-                                        <li class="page-item" v-for="page in pagesNumberM" :key="page" :class="[page == isActived ? 'active' : '']">
+                                        <li class="page-item" v-for="page in pagesNumberM" :key="page" :class="[page == isActivedM ? 'active' : '']">
                                             <a class="page-link" href="#" @click.prevent="cambiarPaginaM(page,buscarA,criterioA)" v-text="page"></a>
                                         </li>
                                         <li class="page-item" v-if="paginationM.current_page < paginationM.last_page">
@@ -473,6 +473,10 @@
         computed:{
             isActived: function(){
                 return this.pagination.current_page;
+            },
+            
+            isActivedM: function(){
+                return this.paginationM.current_page;
             },
             //Calcula los elementos de la paginación
             pagesNumber: function() {
@@ -762,9 +766,9 @@
                             me.producto_pventa = 0;
                             me.producto_barra = '';
                             me.arrayDetalle=[];
-                            window.open(this.ruta + '/factura/pdf/'+response.data.facturaid+','+'_blank');
+                            window.open(me.ruta + '/factura/pdf/'+response.data.facturaid+','+'_blank');
                         }).catch(function (error){
-                            console.log(error.response);
+                            console.log(error.data);
                         });
                     } else {
                         axios.post(this.ruta + '/factura/registrar',{
@@ -786,10 +790,10 @@
                             me.producto_pventa = 0;
                             me.producto_barra = '';
                             me.arrayDetalle=[];
-                            window.open(this.ruta + '/factura/pdf/'+response.data.facturaid+','+'_blank');
+                            window.open(me.ruta + '/factura/pdf/'+response.data.facturaid+','+'_blank');
 
                         }).catch(function (error) {
-                            console.log(error.response);
+                            alert(error);
                         });
                     }
                 }
