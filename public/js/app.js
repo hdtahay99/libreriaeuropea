@@ -3866,8 +3866,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['ruta'],
@@ -3927,7 +3925,8 @@ __webpack_require__.r(__webpack_exports__);
       cliente_nombre: '',
       cliente_apellido: '',
       editar: 0,
-      bandera: null
+      bandera: null,
+      bandera2: null
     };
   },
   components: {
@@ -4170,6 +4169,12 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     listarProducto: function listarProducto(page, buscar, criterio) {
+      if (parseInt(buscar)) {
+        criterio = 'producto_barra';
+      } else if (criterio == 'producto_nombre' && typeof buscar == 'string') {
+        criterio = 'producto_nombre';
+      }
+
       var me = this;
       var url = this.ruta + '/producto/listarProductoVenta?buscar=' + buscar + '&criterio=' + criterio + '&page=' + page;
       axios.get(url).then(function (response) {
@@ -4286,6 +4291,7 @@ __webpack_require__.r(__webpack_exports__);
     mostrarDetalle: function mostrarDetalle() {
       var me = this;
       me.listado = 0;
+      me.bandera2 = true;
       me.idproveedor = 0;
       me.tipo_comprobante = 'BOLETA';
       me.serie_comprobante = '';
@@ -4341,6 +4347,7 @@ __webpack_require__.r(__webpack_exports__);
         this.arrayProducto = [];
         this.modal = 1;
         this.tituloModal = 'Seleccione uno o varios productos';
+        this.listarProducto(1, '', '');
       } else {
         if (this.validarFactura()) {
           return;
@@ -54995,6 +55002,7 @@ var render = function() {
                             staticClass: "form-control",
                             attrs: {
                               id: "buscarpro",
+                              autofocus: "",
                               type: "text",
                               placeholder: "Ingrese producto"
                             },
@@ -55685,7 +55693,7 @@ var render = function() {
                         },
                         [
                           _c("div", { staticClass: "form-group row" }, [
-                            _c("div", { staticClass: "col-md-6" }, [
+                            _c("div", { staticClass: "col-md-9" }, [
                               _c("div", { staticClass: "input-group" }, [
                                 _c(
                                   "select",
@@ -55699,6 +55707,7 @@ var render = function() {
                                       }
                                     ],
                                     staticClass: "form-control col-md-4",
+                                    staticStyle: { width: "50%" },
                                     on: {
                                       change: function($event) {
                                         var $$selectedVal = Array.prototype.filter
@@ -55743,6 +55752,7 @@ var render = function() {
                                     }
                                   ],
                                   staticClass: "form-control",
+                                  staticStyle: { width: "100%" },
                                   attrs: {
                                     id: "textareaID1",
                                     type: "text",
@@ -55866,14 +55876,6 @@ var render = function() {
                                             }
                                           })
                                         ]),
-                                        _vm._v(" "),
-                                        _c("td", {
-                                          domProps: {
-                                            textContent: _vm._s(
-                                              producto.producto_pcompra
-                                            )
-                                          }
-                                        }),
                                         _vm._v(" "),
                                         _c("td", {
                                           domProps: {
@@ -56235,8 +56237,6 @@ var staticRenderFns = [
         _c("th", [_vm._v("Nombre")]),
         _vm._v(" "),
         _c("th", [_vm._v("Visualización")]),
-        _vm._v(" "),
-        _c("th", [_vm._v("Precio compra")]),
         _vm._v(" "),
         _c("th", [_vm._v("Precio Venta")]),
         _vm._v(" "),

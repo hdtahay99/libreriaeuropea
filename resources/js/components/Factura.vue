@@ -120,7 +120,7 @@
                                     <div class="form-group">
                                         <label>Producto <span style="color:red;" v-show="productoid==0">(*Seleccione)</span></label>
                                         <div class="form-inline">
-                                            <input id="buscarpro" type="text" class="form-control" v-model="producto_barra" @keyup.enter="buscarProducto()" placeholder="Ingrese producto">
+                                            <input id="buscarpro" autofocus type="text" class="form-control" v-model="producto_barra" @keyup.enter="buscarProducto()" placeholder="Ingrese producto">
                                             <button @click="abrirModal(1)"  class="btn btn-primary">...</button>
                                             <input type="text" style="width: 50%" readonly class="form-control" v-model="producto_nombre">
                                         </div>                                    
@@ -320,13 +320,13 @@
                         <template v-if="modal == 1">
                             <div onfocus="enfocar()" class="modal-body">
                                 <div class="form-group row">
-                                    <div class="col-md-6">
+                                    <div class="col-md-9">
                                         <div class="input-group">
-                                            <select class="form-control col-md-4" v-model="criterioA">
+                                            <select style="width: 50%" class="form-control col-md-4" v-model="criterioA">
                                             <option value="producto_nombre">Nombre</option>
                                             <option value="producto_barra">Código</option>
                                             </select>
-                                            <input id="textareaID1" type="text" v-model="buscarA" @keyup="listarProducto(1,buscarA,criterioA)" class="form-control" placeholder="Ingrese el nombre del producto o su código">
+                                            <input id="textareaID1" style="width: 100%" type="text" v-model="buscarA" @keyup="listarProducto(1,buscarA,criterioA)" class="form-control" placeholder="Ingrese el nombre del producto o su código">
                                             <button type="submit" @click="listarProducto(1,buscarA,criterioA)" class="btn btn-primary"><i class="fa fa-search"></i> Buscar</button>
                                         </div>
                                     </div>
@@ -340,7 +340,6 @@
                                                 <th>Código</th>
                                                 <th>Nombre</th>
                                                 <th>Visualización</th>
-                                                <th>Precio compra</th>
                                                 <th>Precio Venta</th>
                                                 <th>Stock</th>
                                             </tr>
@@ -356,7 +355,6 @@
                                                 <td v-text="producto.producto_barra"></td>
                                                 <td v-text="producto.producto_nombre"></td>
                                                 <td><img width="100" height="100" v-bind:src="'uploads/'+producto.producto_imagen" /></td>
-                                                <td v-text="producto.producto_pcompra"></td>
                                                 <td v-text="producto.producto_pventa"></td>
                                                 <td v-text="producto.producto_existencia"></td>
                                             </tr>                                
@@ -464,7 +462,8 @@
                 cliente_nombre: '',
                 cliente_apellido: '',
                 editar: 0,
-                bandera : null,
+                bandera: null,
+                bandera2: null, 
             }
         },
         components: {
@@ -705,6 +704,13 @@
                     }
             },
             listarProducto(page,buscar,criterio){
+                if(parseInt(buscar)){
+                    criterio = 'producto_barra';
+                }
+                else if(criterio == 'producto_nombre' && typeof buscar == 'string')
+                {
+                    criterio = 'producto_nombre';
+                }
                 let me=this;
                 var url= this.ruta + '/producto/listarProductoVenta?buscar='+ buscar + '&criterio='+ criterio+'&page=' +page;
                 axios.get(url).then(function (response) {
@@ -831,7 +837,7 @@
             mostrarDetalle(){
                 let me=this;
                 me.listado=0;
-
+                me.bandera2 =true;
                 me.idproveedor=0;
                 me.tipo_comprobante='BOLETA';
                 me.serie_comprobante='';
@@ -894,6 +900,7 @@
                     this.arrayProducto=[];
                     this.modal = 1;
                     this.tituloModal = 'Seleccione uno o varios productos';
+                    this.listarProducto(1,'','');
                 }
                 else{
                     if (this.validarFactura()){
