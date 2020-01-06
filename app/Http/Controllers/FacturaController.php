@@ -151,32 +151,6 @@ class FacturaController extends Controller
                 $detalle->save();
             }
 
-            $fechaActual = date('Y-m-d');
-            $numVentas = DB::table('facturas')->whereDate('created_at', $fechaActual)->count();
-            $numProductos = DB::table('productos')
-            ->where('productos.producto_existencia','<','5')
-            ->where('productos.categoriaid','=','1')
-            ->where('productos.producto_estado','=','1')
-            ->count();
-
-            $arregloDatos = [
-                'ventas' => [
-                    'numero' => $numVentas,
-                    'msj' => 'Ventas'
-                ],
-
-                'productos' => [
-                    'numero' => $numProductos,
-                    'msj' => 'Productos'
-                ]
-            ];
-
-            $allUsers = User::all();
-
-            foreach ($allUsers as $notificar) {
-                User::findOrFail($notificar->userid)->notify(new NotifyAdmin($arregloDatos));
-            }
-
             DB::commit();
 
             return [
@@ -215,32 +189,7 @@ class FacturaController extends Controller
                 $detalle->detalle_monto = $det['detalle_monto'];
                 $detalle->save();
             }
-
-            $fechaActual = date('Y-m-d');
-            $numVentas = DB::table('facturas')->whereDate('created_at', $fechaActual)->count();
-            $numProductos = DB::table('productos')
-            ->where('productos.producto_existencia','<','5')
-            ->where('productos.categoriaid','=','1')
-            ->where('productos.producto_estado','=','1')
-            ->count();
-
-            $arregloDatos = [
-                'ventas' => [
-                    'numero' => $numVentas,
-                    'msj' => 'Ventas'
-                ],
-
-                'productos' => [
-                    'numero' => $numProductos,
-                    'msj' => 'Productos'
-                ]
-            ];
-
-            $allUsers = User::all();
-
-            foreach ($allUsers as $notificar) {
-                User::findOrFail($notificar->userid)->notify(new NotifyAdmin($arregloDatos));
-            }
+            
 
             DB::commit();
 

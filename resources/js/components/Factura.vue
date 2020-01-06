@@ -99,6 +99,7 @@
                                             <input type="text" style="width: 50%" id="nit" v-model="cliente_nit" @keyup="buscarCliente(cliente_nit)" class="form-control" placeholder="Ingrese el nit del cliente"><br>
                                             <button v-if="editar==0" type="submit" @click="modificarCF()" class="btn btn-warning"><i class="icon-pencil"></i> </button>
                                         </div>
+                                        <br>
                                         <input :disabled="bandera ? true : false" type="text" style="width: 50%" id="cnombre" v-model="cliente_nombre"  class="form-control" placeholder="Ingrese el nombre del cliente"><br>
                                         <input :disabled="bandera ? true : false" type="text" style="width: 50%" id="capellido" v-model="cliente_apellido"  class="form-control" placeholder="Ingrese el apellido del cliente"><br>
                                         <input :disabled="bandera ? true : false" type="text" style="width: 50%" id="cdireccion" v-model="cliente_direccion"  class="form-control" placeholder="Ingrese la dirección del cliente">
@@ -736,7 +737,7 @@
                     type: 'success',
                     title: 'El vuelto es de: '+ (pago - this.factura_total),
                     showConfirmButton: false,
-                    timer: 2200
+                    timer: 4200
                     })
                     this.modal = 0;
                     
@@ -772,7 +773,7 @@
                             me.producto_pventa = 0;
                             me.producto_barra = '';
                             me.arrayDetalle=[];
-                            window.open(me.ruta + '/factura/pdf/'+response.data.facturaid+','+'_blank');
+                            window.open(me.ruta + '/factura/pdf/'+response.data.facturaid);
                         }).catch(function (error){
                             console.log(error.data);
                         });
@@ -796,7 +797,7 @@
                             me.producto_pventa = 0;
                             me.producto_barra = '';
                             me.arrayDetalle=[];
-                            window.open(me.ruta + '/factura/pdf/'+response.data.facturaid+','+'_blank');
+                            window.open(me.ruta + '/factura/pdf/'+response.data.facturaid);
 
                         }).catch(function (error) {
                             alert(error);
@@ -839,10 +840,6 @@
                 me.listado=0;
                 me.bandera2 =true;
                 me.idproveedor=0;
-                me.tipo_comprobante='BOLETA';
-                me.serie_comprobante='';
-                me.num_comprobante='';
-                me.impuesto=0.18;
                 me.total=0.0;
                 me.idarticulo=0;
                 me.articulo='';
@@ -853,6 +850,25 @@
             ocultarDetalle(){
                 this.listado=1;
                 this.facturaid = 0;
+                this.editar = 0;
+                this.bandera = true;
+                this.listarFactura(1,'','');
+                this.clienteid=0;
+                this.cliente_nombre = '';
+                this.cliente_apellido = '';
+                this.cliente_direccion = '';
+                this.cliente_nit = 'c/f';
+                this.buscarCliente(this.cliente_nit);
+                document.getElementById('nit').readOnly = false;
+                this.factura_total=0.0;
+                this.factura_pago=0.0;
+                this.productoid=0;
+                this.producto_nombre='';
+                this.cantidad=0;
+                this.producto_existencia=0;
+                this.producto_pventa = 0;
+                this.producto_barra = '';
+                this.arrayDetalle=[];
             },
             verFactura(id){
                 let me=this;

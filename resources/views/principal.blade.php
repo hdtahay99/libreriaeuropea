@@ -5,9 +5,9 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="Sistema Ventas Laravel Vue Js- IncanatoIT">
-    <meta name="author" content="Incanatoit.com">
-    <meta name="keyword" content="Sistema ventas Laravel Vue Js, Sistema compras Laravel Vue Js">
+    <meta name="description" content="Sistema Ventas - Librería Europea">
+    <meta name="author" content="Librería Europea">
+    <meta name="keyword" content="Sistema de Ventas Librería Europea">
     <link rel="shortcut icon" href="img/FF.png">
     <meta name="userid" content="{{ Auth::check() ? Auth::user()->userid : ''}}">
     <title>Sistema Ventas - Librería Europea</title>

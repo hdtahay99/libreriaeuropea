@@ -3866,6 +3866,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['ruta'],
@@ -4198,7 +4199,7 @@ __webpack_require__.r(__webpack_exports__);
           type: 'success',
           title: 'El vuelto es de: ' + (pago - this.factura_total),
           showConfirmButton: false,
-          timer: 2200
+          timer: 4200
         });
         this.modal = 0;
         var me = this;
@@ -4233,7 +4234,7 @@ __webpack_require__.r(__webpack_exports__);
             me.producto_pventa = 0;
             me.producto_barra = '';
             me.arrayDetalle = [];
-            window.open(me.ruta + '/factura/pdf/' + response.data.facturaid + ',' + '_blank');
+            window.open(me.ruta + '/factura/pdf/' + response.data.facturaid);
           }).catch(function (error) {
             console.log(error.data);
           });
@@ -4256,7 +4257,7 @@ __webpack_require__.r(__webpack_exports__);
             me.producto_pventa = 0;
             me.producto_barra = '';
             me.arrayDetalle = [];
-            window.open(me.ruta + '/factura/pdf/' + response.data.facturaid + ',' + '_blank');
+            window.open(me.ruta + '/factura/pdf/' + response.data.facturaid);
           }).catch(function (error) {
             alert(error);
           });
@@ -4293,10 +4294,6 @@ __webpack_require__.r(__webpack_exports__);
       me.listado = 0;
       me.bandera2 = true;
       me.idproveedor = 0;
-      me.tipo_comprobante = 'BOLETA';
-      me.serie_comprobante = '';
-      me.num_comprobante = '';
-      me.impuesto = 0.18;
       me.total = 0.0;
       me.idarticulo = 0;
       me.articulo = '';
@@ -4307,6 +4304,25 @@ __webpack_require__.r(__webpack_exports__);
     ocultarDetalle: function ocultarDetalle() {
       this.listado = 1;
       this.facturaid = 0;
+      this.editar = 0;
+      this.bandera = true;
+      this.listarFactura(1, '', '');
+      this.clienteid = 0;
+      this.cliente_nombre = '';
+      this.cliente_apellido = '';
+      this.cliente_direccion = '';
+      this.cliente_nit = 'c/f';
+      this.buscarCliente(this.cliente_nit);
+      document.getElementById('nit').readOnly = false;
+      this.factura_total = 0.0;
+      this.factura_pago = 0.0;
+      this.productoid = 0;
+      this.producto_nombre = '';
+      this.cantidad = 0;
+      this.producto_existencia = 0;
+      this.producto_pventa = 0;
+      this.producto_barra = '';
+      this.arrayDetalle = [];
     },
     verFactura: function verFactura(id) {
       var me = this;
@@ -54847,6 +54863,8 @@ var render = function() {
                               )
                             : _vm._e()
                         ]),
+                        _vm._v(" "),
+                        _c("br"),
                         _vm._v(" "),
                         _c("input", {
                           directives: [
