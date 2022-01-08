@@ -14,7 +14,7 @@ class DashboardController extends Controller
         $ingresos = DB::table('productos as p')
         ->select(DB::raw('MONTH(p.updated_at) as mes'),
         DB::raw('YEAR(p.updated_at) as anio'),
-        DB::raw('SUM(p.productoid) as total'))
+        DB::raw('COUNT(p.productoid) as total'))
         ->whereYear('p.updated_at',$anio)
         ->groupBy(DB::raw('MONTH(p.updated_at)'),DB::raw('YEAR(p.updated_at)'))
         ->get();

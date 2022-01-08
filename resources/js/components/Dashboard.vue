@@ -1,7 +1,7 @@
 <template>
 <main class="main">
     <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="/">Escritorio</a></li>
+        <li class="breadcrumb-item"><a href="/">Panel Principal</a></li>
     </ol>
     <div class="container-fluid">
         <div class="card">
@@ -15,7 +15,7 @@
                     <div class="col-md-6">
                         <div class="card card-chart">
                             <div class="card-header">
-                                <h4>Ingresos</h4>
+                                <h4>Productos Ingresados</h4>
                             </div>
                         </div>
                         <div class="card-content">
@@ -26,7 +26,7 @@
                             </div>
                         </div>
                         <div class="cart-footer">
-                            <p>Ingresos de los últimos meses</p>
+                            <p>Productos ingresados de los últimos meses</p>
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -63,13 +63,17 @@ export default {
             ingresos:[],
             varTotalIngreso:[],
             varMesIngreso:[],
-
-
             varVenta:null,
             charVenta:null,
             ventas:[],
             varTotalVenta:[],
             varMesVenta:[],
+            months:{1: "Enero", 2: "Febrero", 
+                    3: "Marzo", 4: "Abril", 
+                    5: "Mayo", 6: "Junio", 
+                    7: "Julio", 8: "Agosto", 
+                    9: "Septiembre", 10: "Octubre",
+                    11: "Noviembre", 12: "Diciembre"}
         }
     },
     methods:{
@@ -80,7 +84,6 @@ export default {
             axios.get(url).then(function (response) {
                 var respuesta = response.data;
                 me.ingresos = respuesta.ingresos;
-
                 me.loadIngresos();
             })
             .catch(function (error) {
@@ -95,7 +98,6 @@ export default {
             axios.get(url).then(function (response) {
                 var respuesta = response.data;
                 me.ventas = respuesta.ventas;
-
                 me.loadVentas();
             })
             .catch(function (error) {
@@ -106,7 +108,7 @@ export default {
         loadVentas(){
             let me=this;
             me.ventas.map(function (x){
-                me.varMesVenta.push(x.mes);
+                me.varMesVenta.push(me.months[x.mes]);
                 me.varTotalVenta.push(x.total);
             });
             me.varVenta=document.getElementById('ventas').getContext('2d');
@@ -117,7 +119,7 @@ export default {
                     labels: me.varMesVenta,
                     datasets: [{
                         label: 'Ventas',
-                        data: me.varTotalIngreso,
+                        data: me.varTotalVenta,
                         backgroundColor: 'rgba(153, 102, 255, 0.2)',
 
                         borderColor: 'rgba(153, 102, 255, 1)',
@@ -139,7 +141,7 @@ export default {
         loadIngresos(){
             let me=this;
             me.ingresos.map(function (x){
-                me.varMesIngreso.push(x.mes);
+                me.varMesIngreso.push(me.months[x.mes]);
                 me.varTotalIngreso.push(x.total);
             });
             me.varIngreso=document.getElementById('ingresos').getContext('2d');

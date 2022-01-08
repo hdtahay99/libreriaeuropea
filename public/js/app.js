@@ -2948,7 +2948,21 @@ __webpack_require__.r(__webpack_exports__);
       charVenta: null,
       ventas: [],
       varTotalVenta: [],
-      varMesVenta: []
+      varMesVenta: [],
+      months: {
+        1: "Enero",
+        2: "Febrero",
+        3: "Marzo",
+        4: "Abril",
+        5: "Mayo",
+        6: "Junio",
+        7: "Julio",
+        8: "Agosto",
+        9: "Septiembre",
+        10: "Octubre",
+        11: "Noviembre",
+        12: "Diciembre"
+      }
     };
   },
   methods: {
@@ -2977,7 +2991,7 @@ __webpack_require__.r(__webpack_exports__);
     loadVentas: function loadVentas() {
       var me = this;
       me.ventas.map(function (x) {
-        me.varMesVenta.push(x.mes);
+        me.varMesVenta.push(me.months[x.mes]);
         me.varTotalVenta.push(x.total);
       });
       me.varVenta = document.getElementById('ventas').getContext('2d');
@@ -2987,7 +3001,7 @@ __webpack_require__.r(__webpack_exports__);
           labels: me.varMesVenta,
           datasets: [{
             label: 'Ventas',
-            data: me.varTotalIngreso,
+            data: me.varTotalVenta,
             backgroundColor: 'rgba(153, 102, 255, 0.2)',
             borderColor: 'rgba(153, 102, 255, 1)',
             borderWidth: 1
@@ -3007,7 +3021,7 @@ __webpack_require__.r(__webpack_exports__);
     loadIngresos: function loadIngresos() {
       var me = this;
       me.ingresos.map(function (x) {
-        me.varMesIngreso.push(x.mes);
+        me.varMesIngreso.push(me.months[x.mes]);
         me.varTotalIngreso.push(x.total);
       });
       me.varIngreso = document.getElementById('ingresos').getContext('2d');
@@ -53529,7 +53543,7 @@ var staticRenderFns = [
     return _c("main", { staticClass: "main" }, [
       _c("ol", { staticClass: "breadcrumb" }, [
         _c("li", { staticClass: "breadcrumb-item" }, [
-          _c("a", { attrs: { href: "/" } }, [_vm._v("Escritorio")])
+          _c("a", { attrs: { href: "/" } }, [_vm._v("Panel Principal")])
         ])
       ]),
       _vm._v(" "),
@@ -53542,7 +53556,7 @@ var staticRenderFns = [
               _c("div", { staticClass: "col-md-6" }, [
                 _c("div", { staticClass: "card card-chart" }, [
                   _c("div", { staticClass: "card-header" }, [
-                    _c("h4", [_vm._v("Ingresos")])
+                    _c("h4", [_vm._v("Productos Ingresados")])
                   ])
                 ]),
                 _vm._v(" "),
@@ -53553,7 +53567,7 @@ var staticRenderFns = [
                 ]),
                 _vm._v(" "),
                 _c("div", { staticClass: "cart-footer" }, [
-                  _c("p", [_vm._v("Ingresos de los últimos meses")])
+                  _c("p", [_vm._v("Productos ingresados de los últimos meses")])
                 ])
               ]),
               _vm._v(" "),
