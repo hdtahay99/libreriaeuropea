@@ -177,7 +177,7 @@
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" @click="cerrarModal()">Cerrar</button>
                             <button type="button" v-if="tipoAccion == 1" @click="registrarProducto()" class="btn btn-primary">Guardar</button>
-                            <button type="button" v-if="tipoAccion == 2" @click="actualizarProducto()" class="btn btn-primary">Actualzar</button>
+                            <button type="button" v-if="tipoAccion == 2" @click="actualizarProducto()" class="btn btn-primary">Actualizar</button>
                         </div>
                     </div>
                     <!-- /.modal-content -->

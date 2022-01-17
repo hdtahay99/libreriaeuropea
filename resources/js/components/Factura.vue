@@ -1,8 +1,8 @@
-<template>
+<template onload="onLoadBody">
             <main class="main">
             <!-- Breadcrumb -->
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="/">Escritorio</a></li>
+                <li class="breadcrumb-item"><a href="/EuropeaWeb/public/main">Escritorio</a></li>
             </ol>
             <div class="container-fluid">
                 <!-- Ejemplo de tabla Listado -->
@@ -91,19 +91,18 @@
                     <template v-else-if="listado==0">
                         <div class="card-body">
                             <div class="form-group row border">
-                                <div class="col-md-9">
+                                
+                                <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="">Cliente(*)</label>
-                                        <v-select
-                                            :on-search="selectCliente"
-                                            :filterable="false"
-                                            label="nombre"
-                                            :options="arrayCliente"
-                                            placeholder="Buscar Cliente..."
-                                            :onChange="getDatosCliente"                                         
-                                        >
-
-                                        </v-select>
+                                        <div class="form-inline">
+                                            <input type="text" style="width: 50%" id="nit" v-model="cliente_nit" @keyup="buscarCliente(cliente_nit)" class="form-control" placeholder="Ingrese el nit del cliente"><br>
+                                            <button v-if="editar==0" type="submit" @click="modificarCF()" class="btn btn-warning"><i class="icon-pencil"></i> </button>
+                                        </div>
+                                        <br>
+                                        <input :disabled="bandera ? true : false" type="text" style="width: 50%" id="cnombre" v-model="cliente_nombre"  class="form-control" placeholder="Ingrese el nombre del cliente"><br>
+                                        <input :disabled="bandera ? true : false" type="text" style="width: 50%" id="capellido" v-model="cliente_apellido"  class="form-control" placeholder="Ingrese el apellido del cliente"><br>
+                                        <input :disabled="bandera ? true : false" type="text" style="width: 50%" id="cdireccion" v-model="cliente_direccion"  class="form-control" placeholder="Ingrese la dirección del cliente">
                                     </div>
                                 </div>
 
@@ -122,9 +121,9 @@
                                     <div class="form-group">
                                         <label>Producto <span style="color:red;" v-show="productoid==0">(*Seleccione)</span></label>
                                         <div class="form-inline">
-                                            <input type="text" class="form-control" v-model="producto_barra" @keyup.enter="buscarProducto()" placeholder="Ingrese producto">
-                                            <button @click="abrirModal(1)" class="btn btn-primary">...</button>
-                                            <input type="text" readonly class="form-control" v-model="producto_nombre">
+                                            <input id="buscarpro" autofocus type="text" class="form-control" v-model="producto_barra" @keyup.enter="buscarProducto()" placeholder="Ingrese producto">
+                                            <button @click="abrirModal(1)"  class="btn btn-primary">...</button>
+                                            <input type="text" style="width: 50%" readonly class="form-control" v-model="producto_nombre">
                                         </div>                                    
                                     </div>
                                 </div>
@@ -261,7 +260,8 @@
                                         <thead>
                                             <tr>
                                                 <th>Producto</th>
-                                                <th>Precio</th>
+                                                <th>Precio Inventario</th>
+                                                <th>Precio Venta</th>
                                                 <th>Cantidad</th>
                                                 <th>Subtotal</th>
                                             </tr>
@@ -272,14 +272,16 @@
                                                 </td>
                                                 <td v-text="detalle.producto_pventa">
                                                 </td>
+                                                <td v-text="detalle.detalle_monto">
+                                                </td>
                                                 <td v-text="detalle.detalle_cantidad">
                                                 </td>
                                                 <td>
-                                                    {{detalle.producto_pventa*detalle.detalle_cantidad}}
+                                                    {{detalle.detalle_monto*detalle.detalle_cantidad}}
                                                 </td>
                                             </tr>
                                             <tr style="background-color: #CEECF5;">
-                                                <td colspan="3" align="right"><strong>Total Neto:</strong></td>
+                                                <td colspan="4" align="right"><strong>Total Neto:</strong></td>
                                                 <td>Q {{total}}</td>
                                             </tr>
                                         </tbody>
@@ -306,7 +308,7 @@
                 <!-- Fin ejemplo de tabla Listado -->
             </div>
             <!--Inicio del modal agregar/actualizar-->
-            <div class="modal fade" tabindex="-1" :class="{'mostrar' : modal}" role="dialog" aria-labelledby="myModalLabel" style="display: none;" aria-hidden="true">
+            <div class="modal fade" id="myModal1" tabindex="-1" :class="{'mostrar' : modal}" role="dialog" aria-labelledby="myModalLabel" style="display: none;" aria-hidden="true">
                 <div class="modal-dialog modal-primary modal-lg" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -317,15 +319,15 @@
                         </div>
 
                         <template v-if="modal == 1">
-                            <div class="modal-body">
+                            <div onfocus="enfocar()" class="modal-body">
                                 <div class="form-group row">
-                                    <div class="col-md-6">
+                                    <div class="col-md-9">
                                         <div class="input-group">
-                                            <select class="form-control col-md-4" v-model="criterioA">
+                                            <select style="width: 50%" class="form-control col-md-4" v-model="criterioA">
                                             <option value="producto_nombre">Nombre</option>
                                             <option value="producto_barra">Código</option>
                                             </select>
-                                            <input type="text" v-model="buscarA" @keyup.enter="listarProducto(1,buscarA,criterioA)" class="form-control" placeholder="Texto a buscar">
+                                            <input id="textareaID1" style="width: 100%" type="text" v-model="buscarA" @keyup="listarProducto(1,buscarA,criterioA)" class="form-control" placeholder="Ingrese el nombre del producto o su código">
                                             <button type="submit" @click="listarProducto(1,buscarA,criterioA)" class="btn btn-primary"><i class="fa fa-search"></i> Buscar</button>
                                         </div>
                                     </div>
@@ -339,7 +341,6 @@
                                                 <th>Código</th>
                                                 <th>Nombre</th>
                                                 <th>Visualización</th>
-                                                <th>Precio compra</th>
                                                 <th>Precio Venta</th>
                                                 <th>Stock</th>
                                             </tr>
@@ -354,8 +355,7 @@
                                                 <td v-text="producto.categoria_nombre"></td>
                                                 <td v-text="producto.producto_barra"></td>
                                                 <td v-text="producto.producto_nombre"></td>
-                                                <td><img width="100" height="100" v-bind:src="'/uploads/'+producto.producto_imagen" /></td>
-                                                <td v-text="producto.producto_pcompra"></td>
+                                                <td><img width="100" height="100" v-bind:src="'uploads/'+producto.producto_imagen" /></td>
                                                 <td v-text="producto.producto_pventa"></td>
                                                 <td v-text="producto.producto_existencia"></td>
                                             </tr>                                
@@ -367,7 +367,7 @@
                                         <li class="page-item" v-if="paginationM.current_page > 1">
                                             <a class="page-link" href="#" @click.prevent="cambiarPaginaM(paginationM.current_page - 1,buscarA,criterioA)">Ant</a>
                                         </li>
-                                        <li class="page-item" v-for="page in pagesNumberM" :key="page" :class="[page == isActived ? 'active' : '']">
+                                        <li class="page-item" v-for="page in pagesNumberM" :key="page" :class="[page == isActivedM ? 'active' : '']">
                                             <a class="page-link" href="#" @click.prevent="cambiarPaginaM(page,buscarA,criterioA)" v-text="page"></a>
                                         </li>
                                         <li class="page-item" v-if="paginationM.current_page < paginationM.last_page">
@@ -406,6 +406,7 @@
 <script>
     import vSelect from 'vue-select';
     export default {
+        props: ['ruta'],
         data (){
             return {
                 facturaid: 0,
@@ -421,6 +422,7 @@
                 factura_pago : 0.0,
                 arrayFactura : [],
                 arrayCliente: [],
+                consumidor_final: null,
                 arrayDetalle : [],
                 listado:1,
                 modal : 0,
@@ -455,7 +457,14 @@
                 producto_nombre: '',
                 producto_pventa: 0,
                 producto_existencia : 0,
-                cantidad : 0
+                cantidad : 0,
+                cliente_nit : '',
+                cliente_direccion: '',
+                cliente_nombre: '',
+                cliente_apellido: '',
+                editar: 0,
+                bandera: null,
+                bandera2: null, 
             }
         },
         components: {
@@ -464,6 +473,10 @@
         computed:{
             isActived: function(){
                 return this.pagination.current_page;
+            },
+            
+            isActivedM: function(){
+                return this.paginationM.current_page;
             },
             //Calcula los elementos de la paginación
             pagesNumber: function() {
@@ -523,7 +536,7 @@
         methods : {
             listarFactura (page,buscar,criterio){
                 let me=this;
-                var url= '/factura?page=' + page + '&buscar='+ buscar + '&criterio='+ criterio;
+                var url= this.ruta + '/factura?page=' + page + '&buscar='+ buscar + '&criterio='+ criterio;
                 axios.get(url).then(function (response) {
                     var respuesta= response.data;
                     me.arrayFactura = respuesta.facturas.data;
@@ -537,19 +550,45 @@
                 let me=this;
                 loading(true)
 
-                var url= '/cliente/selectCliente?filtro='+search;
+                var url= this.ruta +  '/cliente/selectCliente?filtro='+search;
                 axios.get(url).then(function (response) {
                     let respuesta = response.data;
                     q: search
                     me.arrayCliente=respuesta.clientes;
+                    me.consumidor_final = me.arrayCliente.find(clientes => clientes.cliente_nit === "c/f");
                     loading(false)
                 })
                 .catch(function (error) {
                     console.log(error);
                 });
             },
+            buscarCliente(nit){
+                let me = this;
+
+                var url = this.ruta + '/cliente/buscarCliente/?cliente_nit='+nit;
+                axios.get(url).then(function (response) {
+                    var respuesta = response.data;
+                    if (response.data.cliente.length != 0){
+                        me.cliente_nombre = respuesta.cliente[0].cliente_nombre;
+                        me.cliente_apellido = respuesta.cliente[0].cliente_apellido;
+                        me.cliente_direccion = respuesta.cliente[0].cliente_direccion;
+                        me.clienteid = respuesta.cliente[0].clienteid;
+                        me.bandera = true;
+
+                    }
+                    else {
+                        me.cliente_nombre = '';
+                        me.cliente_apellido = '';
+                        me.cliente_direccion = '';
+                        me.clienteid = 0;
+                        me.bandera = false;
+                    }
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
             pdfVenta(id){
-                window.open('http://libreriaeuropea.cu.ma/factura/pdf/'+id+','+'_blank');
+                window.open(this.ruta + '/factura/pdf/'+id+','+'_blank');
             },
             getDatosCliente(val1){
                 let me = this;
@@ -558,7 +597,7 @@
             },
             buscarProducto(){
                 let me=this;
-                var url= '/producto/buscarProductoVenta?filtro=' + me.producto_barra;
+                var url= this.ruta + '/producto/buscarProductoVenta?filtro=' + me.producto_barra;
 
                 axios.get(url).then(function (response) {
                     var respuesta= response.data;
@@ -645,9 +684,6 @@
                     }
                     
                 }
-
-                
-
             },
             agregarDetalleModal(data =[]){
                 let me=this;
@@ -669,8 +705,15 @@
                     }
             },
             listarProducto(page,buscar,criterio){
+                if(parseInt(buscar)){
+                    criterio = 'producto_barra';
+                }
+                else if(criterio == 'producto_nombre' && typeof buscar == 'string')
+                {
+                    criterio = 'producto_nombre';
+                }
                 let me=this;
-                var url= '/producto/listarProductoVenta?buscar='+ buscar + '&criterio='+ criterio+'&page=' +page;
+                var url= this.ruta + '/producto/listarProductoVenta?buscar='+ buscar + '&criterio='+ criterio+'&page=' +page;
                 axios.get(url).then(function (response) {
                     var respuesta= response.data;
                     me.arrayProducto = respuesta.productos.data;
@@ -694,36 +737,72 @@
                     type: 'success',
                     title: 'El vuelto es de: '+ (pago - this.factura_total),
                     showConfirmButton: false,
-                    timer: 2200
+                    timer: 4200
                     })
                     this.modal = 0;
                     
                     let me = this;
 
-                    axios.post('/factura/registrar',{
-                        'clienteid': this.clienteid,
-                        'factura_total': this.factura_total,
-                        'factura_pago' : this.factura_pago,
-                        'data': this.arrayDetalle
+                    if (me.editar == 1){                    
+                        axios.post(this.ruta + '/factura/registrar2', {
+                            'cliente_nit': this.cliente_nit,
+                            'cliente_nombre': this.cliente_nombre,
+                            'cliente_apellido': this.cliente_apellido,
+                            'cliente_direccion': this.cliente_direccion,
+                            'factura_total': this.factura_total,
+                            'factura_pago' : this.factura_pago,
+                            'data': this.arrayDetalle
+                        }).then(function (response) {
+                            me.listado=0;
+                            me.editar = 0;
+                            me.bandera = true;
+                            me.listarFactura(1,'','');
+                            me.clienteid=0;
+                            me.cliente_nombre = '';
+                            me.cliente_apellido = '';
+                            me.cliente_direccion = '';
+                            me.cliente_nit = 'c/f';
+                            me.buscarCliente(me.cliente_nit);
+                            document.getElementById('nit').readOnly = false;
+                            me.factura_total=0.0;
+                            me.factura_pago=0.0;
+                            me.productoid=0;
+                            me.producto_nombre='';
+                            me.cantidad=0;
+                            me.producto_existencia=0;
+                            me.producto_pventa = 0;
+                            me.producto_barra = '';
+                            me.arrayDetalle=[];
+                            window.open(me.ruta + '/factura/pdf/'+response.data.facturaid);
+                        }).catch(function (error){
+                            console.log(error.data);
+                        });
+                    } else {
+                        axios.post(this.ruta + '/factura/registrar',{
+                            'clienteid': this.clienteid,
+                            'factura_total': this.factura_total,
+                            'factura_pago' : this.factura_pago,
+                            'data': this.arrayDetalle
 
-                    }).then(function (response) {
-                        me.listado=1;
-                        me.listarFactura(1,'','');
-                        me.clienteid=0;
-                        me.factura_total=0.0;
-                        me.factura_pago=0.0;
-                        me.productoid=0;
-                        me.producto_nombre='';
-                        me.cantidad=0;
-                        me.producto_existencia=0;
-                        me.producto_pventa = 0;
-                        me.producto_barra = '';
-                        me.arrayDetalle=[];
-                        window.open('http://libreriaeuropea.cu.ma/factura/pdf/'+response.data.facturaid+','+'_blank');
+                        }).then(function (response) {
+                            me.listado=0;
+                            me.listarFactura(1,'','');
+                            me.clienteid=0;
+                            me.factura_total=0.0;
+                            me.factura_pago=0.0;
+                            me.productoid=0;
+                            me.producto_nombre='';
+                            me.cantidad=0;
+                            me.producto_existencia=0;
+                            me.producto_pventa = 0;
+                            me.producto_barra = '';
+                            me.arrayDetalle=[];
+                            window.open(me.ruta + '/factura/pdf/'+response.data.facturaid);
 
-                    }).catch(function (error) {
-                        console.log(error.response);
-                    });
+                        }).catch(function (error) {
+                            alert(error);
+                        });
+                    }
                 }
             },
             validarFactura(){
@@ -747,15 +826,20 @@
 
                 return this.errorFactura;
             },
+            modificarCF(){
+                let me = this;
+                me.editar = 1;
+                me.cliente_nombre = '';
+                me.cliente_apellido = '';
+                me.cliente_direccion = '';
+                document.getElementById('nit').readOnly = true;
+                me.bandera = false;
+            },
             mostrarDetalle(){
                 let me=this;
                 me.listado=0;
-
+                me.bandera2 =true;
                 me.idproveedor=0;
-                me.tipo_comprobante='BOLETA';
-                me.serie_comprobante='';
-                me.num_comprobante='';
-                me.impuesto=0.18;
                 me.total=0.0;
                 me.idarticulo=0;
                 me.articulo='';
@@ -766,6 +850,25 @@
             ocultarDetalle(){
                 this.listado=1;
                 this.facturaid = 0;
+                this.editar = 0;
+                this.bandera = true;
+                this.listarFactura(1,'','');
+                this.clienteid=0;
+                this.cliente_nombre = '';
+                this.cliente_apellido = '';
+                this.cliente_direccion = '';
+                this.cliente_nit = 'c/f';
+                this.buscarCliente(this.cliente_nit);
+                document.getElementById('nit').readOnly = false;
+                this.factura_total=0.0;
+                this.factura_pago=0.0;
+                this.productoid=0;
+                this.producto_nombre='';
+                this.cantidad=0;
+                this.producto_existencia=0;
+                this.producto_pventa = 0;
+                this.producto_barra = '';
+                this.arrayDetalle=[];
             },
             verFactura(id){
                 let me=this;
@@ -774,7 +877,7 @@
                 
                 //Obtener los datos del ingreso
                 var arrayFacturaT=[];
-                var url= '/factura/obtenerCabecera?facturaid=' + id;
+                var url= this.ruta + '/factura/obtenerCabecera?facturaid=' + id;
                 
                 axios.get(url).then(function (response) {
                     var respuesta= response.data;
@@ -793,7 +896,7 @@
                 });
 
                 //Obtener los datos de los detalles 
-                var urld= '/factura/obtenerDetalles?facturaid=' + id;
+                var urld= this.ruta + '/factura/obtenerDetalles?facturaid=' + id;
                 
                 axios.get(urld).then(function (response) {
                     console.log(response);
@@ -807,12 +910,13 @@
             cerrarModal(){
                 this.modal=0;
                 this.tituloModal='';
-            }, 
+            },
             abrirModal(condicion){
                 if(condicion == 1){
                     this.arrayProducto=[];
                     this.modal = 1;
                     this.tituloModal = 'Seleccione uno o varios productos';
+                    this.listarProducto(1,'','');
                 }
                 else{
                     if (this.validarFactura()){
@@ -821,7 +925,6 @@
                     this.modal = 2;
                     this.tituloModal = 'Ingrese el monto recibido por el cliente';
                 }               
-
             },
 
             desactivarFactura(id){
@@ -844,7 +947,7 @@
                 if (result.value) {
 
                     let me = this;
-                    axios.put('/factura/desactivar',{
+                    axios.put(this.ruta + '/factura/desactivar',{
                         'facturaid' : id
                     }).then(function (response){
                         me.listarFactura(1,'','nombre');
@@ -862,10 +965,12 @@
                 ) {
                 }
                 })
-            },
+            }
         },
         mounted() {
             this.listarFactura(1,this.buscar,this.criterio);
+            this.cliente_nit = 'c/f';
+            this.buscarCliente(this.cliente_nit);
         }
     }
 </script>

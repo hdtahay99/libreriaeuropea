@@ -2,7 +2,7 @@
  <main class="main">
             <!-- Breadcrumb -->
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="/">Escritorio</a></li>
+                <li class="breadcrumb-item"><a href="/EuropeaWeb/public/main">Escritorio</a></li>
             </ol>
             <div class="container-fluid">
                 <!-- Ejemplo de tabla Listado -->
@@ -70,6 +70,7 @@
 
 <script>
     export default {
+        props: ['ruta'],
         data(){
             return{
                 rolid : 0,
@@ -128,7 +129,7 @@
         methods : {
             listarRol(page, buscar, criterio){
                 let me = this;
-                var url = '/rol?page=' + page + '&buscar=' + buscar + '&criterio=' + criterio;
+                var url = this.ruta + '/rol?page=' + page + '&buscar=' + buscar + '&criterio=' + criterio;
                 axios.get(url)
                 .then(function (response) {
                     var respuesta = response.data;

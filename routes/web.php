@@ -29,12 +29,14 @@ Route::group(['middleware' => ['auth']], function(){
     
     Route::group(['middleware' => ['Vendedor']], function(){
         Route::get('/producto', 'ProductoController@index');
+        Route::get('/productoCat', 'ProductoController@buscarProductoCategoria');
         Route::get('/producto/buscarProductoVenta', 'ProductoController@buscarProductoVenta');
         Route::get('/producto/listarProductoVenta', 'ProductoController@listarProductoVenta');
         Route::get('/cliente', 'ClienteController@index');
         Route::post('/cliente/registrar', 'ClienteController@store');
         Route::put('/cliente/actualizar', 'ClienteController@update');
         Route::get('/cliente/selectCliente', 'ClienteController@selectCliente');
+        Route::get('/cliente/buscarCliente', 'ClienteController@buscarCliente');
         Route::get('/factura', 'FacturaController@index');
         Route::post('/factura/registrar', 'FacturaController@store');
         Route::put('/factura/desactivar', 'FacturaController@desactivar');
@@ -72,6 +74,8 @@ Route::group(['middleware' => ['auth']], function(){
         Route::put('/cliente/desactivar', 'ClienteController@desactivar');
         Route::put('/cliente/activar', 'ClienteController@activar');
         Route::get('/cliente/selectCliente', 'ClienteController@selectCliente');
+        Route::get('/cliente/buscarCliente', 'ClienteController@buscarCliente');
+
     
         Route::get('/rol', 'RolController@index');
         Route::get('/rol/selectRol', 'RolController@selectRol');
@@ -84,6 +88,7 @@ Route::group(['middleware' => ['auth']], function(){
 
         Route::get('/factura', 'FacturaController@index');
         Route::post('/factura/registrar', 'FacturaController@store');
+        Route::post('/factura/registrar2', 'FacturaController@store2');
         Route::put('/factura/desactivar', 'FacturaController@desactivar');
         Route::get('/factura/obtenerCabecera', 'FacturaController@obtenerCabecera');
         Route::get('/factura/obtenerDetalles', 'FacturaController@obtenerDetalles');

@@ -2,7 +2,7 @@
  <main class="main">
             <!-- Breadcrumb -->
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="/">Escritorio</a></li>
+                <li class="breadcrumb-item"><a href="/EuropeaWeb/public/main">Panel Principal</a></li>
             </ol>
             <div class="container-fluid">
                 <!-- Ejemplo de tabla Listado -->
@@ -13,7 +13,7 @@
                             <i class="icon-plus"></i>&nbsp;Nuevo
                         </button>
                         <button type="button" @click="cargarPdf()" class="btn btn-info" >
-                            <i class="icon-doc"></i>&nbsp;Imprimir Reporte
+                            <i class="icon-doc"></i>&nbsp;Generar Reporte
                         </button>
                     </div>
                     <div class="card-body">
@@ -23,11 +23,22 @@
                                     <select class="form-control col-md-3" v-model="criterio">
                                       <option value="nombre">Nombre</option>
                                     </select>
-                                    <input type="text" v-model="buscar" @keyup.enter="listarProducto(1,buscar,criterio)" class="form-control" placeholder="Ingrese el nombre del producto">
+                                    <input type="text" v-model="buscar" @keyup="listarProducto(1,buscar,criterio)" class="form-control" placeholder="Ingrese el nombre o código del producto">
                                     <button type="submit" @click="listarProducto(1,buscar,criterio)" class="btn btn-primary"><i class="fa fa-search"></i> Buscar</button>
                                 </div>
                             </div>
+
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <select @click="listarProductoCategoria(1, buscar, criterio)" class="form-control col-md-6" v-model="categoriaidpag">
+                                        <option value="0" disabled>Seleccione</option>
+                                        <option v-for="categorias in arrayCategoriaPaginate" :key="categorias.categoriaid" :value="categorias.categoriaid" v-text="categorias.categoria_nombre"></option>
+                                    </select>
+                                    <button type="submit" @click="limpiarProductoCategoria()" class="btn btn-danger"><i class="fas fa-broom"></i> Limpiar</button>
+                                </div>
+                            </div>
                         </div>
+
                         <table class="table table-bordered table-striped table-sm">
                             <thead>
                                 <tr>
@@ -68,7 +79,7 @@
                                     <td v-text="producto.producto_existencia"></td>
                                     <td v-text="producto.producto_pcompra"></td>
                                     <td v-text="producto.producto_pventa"></td>
-                                    <td><img width="100" height="100" v-bind:src="'/uploads/'+producto.producto_imagen" /></td>
+                                    <td><img width="100" height="100" v-bind:src="'uploads/'+producto.producto_imagen" /></td>
                                     <td>
                                         <div v-if="producto.producto_estado">
                                             <span class="badge badge-success">Activo</span>
@@ -98,13 +109,13 @@
                 <!-- Fin ejemplo de tabla Listado -->
             </div>
             <!--Inicio del modal agregar/actualizar-->
-            <div class="modal fade"  tabindex="-1" :class="{'mostrar' : modal}" role="dialog" aria-labelledby="myModalLabel" style="display: none;" aria-hidden="true">
-                <div class="modal-dialog modal-primary modal-lg" role="document">
+            <div class="modal fade"  tabindex="-1" :class="{'mostrar' : modal}"  role="dialog" aria-labelledby="myModalLabel" style="display: none;" aria-hidden="true">
+                <div class="modal-dialog  modal-dialog modal-dialog-centered modal-primary modal-lg" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h4 class="modal-title" v-text="tituloModal"></h4>
                             <button type="button" class="close" @click="cerrarModal()" aria-label="Close">
-                              <span aria-hidden="true">×</span>
+                              <span aria-hidden="true">x</span>
                             </button>
                         </div>
                         <div class="modal-body">
@@ -177,7 +188,7 @@
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" @click="cerrarModal()">Cerrar</button>
                             <button type="button" v-if="tipoAccion == 1" @click="registrarProducto()" class="btn btn-primary">Guardar</button>
-                            <button type="button" v-if="tipoAccion == 2" @click="actualizarProducto()" class="btn btn-primary">Actualzar</button>
+                            <button type="button" v-if="tipoAccion == 2" @click="actualizarProducto()" class="btn btn-primary">Actualizar</button>
                         </div>
                     </div>
                     <!-- /.modal-content -->
@@ -192,6 +203,7 @@
 <script>
     import VueBarcode from 'vue-barcode';
     export default {
+        props: ['ruta'],
         data(){
             return{
                 productoid : 0,
@@ -220,7 +232,9 @@
                 offset : 3,
                 criterio : 'nombre',
                 buscar : '',
-                arrayCategoria : []
+                arrayCategoria : [],
+                categoriaidpag : 0,
+                arrayCategoriaPaginate : [],
             }
         },
         components: {
@@ -264,12 +278,42 @@
                 this.producto_imagen = event.target.files[0];
             },
             listarProducto(page, buscar, criterio){
-                if(criterio == 'nombre')
+                if(parseInt(buscar)){
+                    criterio = 'producto_barra';
+                }
+                else if(criterio == 'nombre' && typeof buscar == 'string')
                 {
                     criterio = 'producto_nombre';
                 }
                 let me = this;
-                var url = '/producto?page=' + page + '&buscar=' + buscar + '&criterio=' + criterio;
+                var url = this.ruta + '/producto?page=' + page + '&buscar=' + buscar + '&criterio=' + criterio;
+                axios.get(url)
+                .then(function (response) {
+                    var respuesta = response.data;
+                    me.arrayProducto = respuesta.productos.data;
+                    me.pagination = respuesta.pagination;
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+            },
+
+            limpiarProductoCategoria(){
+                this.categoriaidpag = 0;
+                this.listarProducto(1, this.buscar, this.criterio);
+            }
+            ,
+
+            listarProductoCategoria(page, buscar, criterio){
+                if(parseInt(buscar)){
+                    criterio = 'producto_barra';
+                }
+                else if(criterio == 'nombre' && typeof buscar == 'string')
+                {
+                    criterio = 'producto_nombre';
+                }
+                let me = this;
+                var url = this.ruta + '/productoCat?page=' + page + '&buscar=' + buscar + '&criterio=' + criterio + '&categoriaid=' + this.categoriaidpag;
                 axios.get(url)
                 .then(function (response) {
                     var respuesta = response.data;
@@ -282,12 +326,12 @@
             },
 
             cargarPdf(){
-                window.open('http://127.0.0.1:8000/producto/listarPdf','_blank');
+                window.open(this.ruta + '/producto/listarPdf','_blank');
             },
 
             selectCategoria(){
                 let me = this;
-                var url = '/categoria/selectCategoria';
+                var url = this.ruta + '/categoria/selectCategoria';
                 axios.get(url)
                 .then(function (response) {
                     var respuesta = response.data;
@@ -297,11 +341,29 @@
                     console.log(error);
                 });
             },
+
+            selectCategoriaPaginate(){
+                let me = this;
+                var url = this.ruta + '/categoria/selectCategoria';
+                axios.get(url)
+                .then(function (response) {
+                    var respuesta = response.data;
+                    me.arrayCategoriaPaginate = respuesta.categorias;
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+            },
            
             cambiarPagina(page, buscar, criterio){
                 let me = this;
                 me.pagination.current_page = page;
-                me.listarProducto(page, buscar, criterio);
+                if(me.categoriaidpag > 0){
+                    me.listarProductoCategoria(page, buscar, criterio);
+                }
+                else {
+                    me.listarProducto(page, buscar, criterio);
+                }
             },
 
             registrarProducto()
@@ -318,7 +380,7 @@
                 data.append('producto_pventa',this.producto_pventa);
                 data.append('producto_imagen',this.producto_imagen);
                 let me = this;
-                axios.post('/producto/registrar',data).then(function (response){
+                axios.post(this.ruta + '/producto/registrar',data).then(function (response){
                     me.cerrarModal();
                     me.listarProducto(1,'','nombre');
                 }).catch(function (error){
@@ -332,6 +394,9 @@
                     return;
                 }
                 var data = new FormData();
+                if(this.producto_barra == null){
+                    this.producto_barra = '';
+                }
                 data.append('productoid', this.productoid);
                 data.append('categoriaid',this.categoriaid);
                 data.append('producto_nombre',this.producto_nombre);
@@ -342,11 +407,11 @@
                 data.append('producto_imagen',this.producto_imagen);
                 data.append('_method', 'PUT');
                 let me = this;
-                axios.post('/producto/actualizar',data).then(function (response){
+                axios.post(this.ruta + '/producto/actualizar',data).then(function (response){
                     me.cerrarModal();
-                    me.listarProducto(1,'','nombre');
+                    me.listarProducto(me.pagination.current_page, me.buscar,me.criterio);
                 }).catch(function (error){
-                    console.log(error.response);
+                    console.log(error);
                 });
             },
 
@@ -370,10 +435,10 @@
                 if (result.value) {
 
                     let me = this;
-                    axios.put('/producto/desactivar',{
+                    axios.put(this.ruta + '/producto/desactivar',{
                         'productoid' : id
                     }).then(function (response){
-                        me.listarProducto(1,'','nombre');
+                        me.listarProducto(me.pagination.current_page, me.buscar,me.criterio);
                                             
                         swalWithBootstrapButtons.fire(
                         'El producto ha sido desactivado',
@@ -410,10 +475,10 @@
                 if (result.value) {
 
                     let me = this;
-                    axios.put('/producto/activar',{
+                    axios.put(this.ruta + '/producto/activar',{
                         'productoid' : id
                     }).then(function (response){
-                        me.listarProducto(1,'','nombre');
+                        me.listarProducto(me.pagination.current_page, me.buscar,me.criterio);
                                             
                         swalWithBootstrapButtons.fire(
                         'El producto ha sido restaurado',
@@ -505,6 +570,7 @@
             }
         },
         mounted() {
+            this.selectCategoriaPaginate();
             this.listarProducto(1,this.buscar,this.criterio);
         }
     }
@@ -512,7 +578,7 @@
 <style>
     .modal-content{
         width : 100% !important;
-        position: absolute !important;
+        position: relative !important;
     }
     .mostrar{
         display: list-item !important;

@@ -2,7 +2,7 @@
             <main class="main">
             <!-- Breadcrumb -->
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="/">Escritorio</a></li>
+                <li class="breadcrumb-item"><a href="/EuropeaWeb/public/main">Escritorio</a></li>
             </ol>
             <div class="container-fluid">
                 <!-- Ejemplo de tabla Listado -->
@@ -91,7 +91,7 @@
                         <div class="modal-header">
                             <h4 class="modal-title" v-text="tituloModal"></h4>
                             <button type="button" class="close" @click="cerrarModal()" aria-label="Close">
-                              <span aria-hidden="true">×</span>
+                              <span aria-hidden="true">x</span>
                             </button>
                         </div>
                         <div class="modal-body">
@@ -177,6 +177,7 @@
 
 <script>
     export default {
+        props: ['ruta'],
         data (){
             return {
                 empleadoid: 0,
@@ -245,7 +246,7 @@
                     criterio = 'empleado_telefono';
                 }
                 let me=this;
-                var url= '/user?page=' + page + '&buscar='+ buscar + '&criterio='+ criterio;
+                var url= this.ruta + '/user?page=' + page + '&buscar='+ buscar + '&criterio='+ criterio;
                 axios.get(url).then(function (response) {
                     var respuesta= response.data;
                     me.arrayEmpleado = respuesta.empleados.data;
@@ -257,7 +258,7 @@
             },
             selectRol(){
                 let me=this;
-                var url= '/rol/selectRol';
+                var url= this.ruta + '/rol/selectRol';
                 axios.get(url).then(function (response) {
                     var respuesta= response.data;
                     me.arrayRol = respuesta.roles;
@@ -281,7 +282,7 @@
                 
                 let me = this;
 
-                axios.post('/user/registrar',{
+                axios.post(this.ruta + '/user/registrar',{
                     'empleado_nombre': this.empleado_nombre,
                     'empleado_apellido': this.empleado_apellido,
                     'empleado_telefono': this.empleado_telefono,
@@ -304,7 +305,7 @@
                 
                 let me = this;
 
-                axios.put('/user/actualizar',{
+                axios.put(this.ruta + '/user/actualizar',{
                     'empleado_nombre': this.empleado_nombre,
                     'empleado_apellido': this.empleado_apellido,
                     'empleado_telefono': this.empleado_telefono,
@@ -407,7 +408,7 @@
                 if (result.value) {
 
                     let me = this;
-                    axios.put('/user/desactivar',{
+                    axios.put(this.ruta + '/user/desactivar',{
                         'userid' : id
                     }).then(function (response){
                         me.listarEmpleado(1,'','nombre');
@@ -447,7 +448,7 @@
                 if (result.value) {
 
                     let me = this;
-                    axios.put('/user/activar',{
+                    axios.put(this.ruta + '/user/activar',{
                         'userid' : id
                     }).then(function (response){
                         me.listarEmpleado(1,'','nombre');

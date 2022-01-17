@@ -5,9 +5,15 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<<<<<<< HEAD
     <meta name="description" content="Sistema Ventas Laravel Vue Js- IncanatoIT">
     <meta name="author" content="Incanatoit.com">
     <meta name="keyword" content="Sistema ventas Laravel Vue Js, Sistema compras Laravel Vue Js">
+=======
+    <meta name="description" content="Sistema Ventas - Librería Europea">
+    <meta name="author" content="Librería Europea">
+    <meta name="keyword" content="Sistema de Ventas Librería Europea">
+>>>>>>> b103eb9778c2ee67c5803410930ece04270e0611
     <link rel="shortcut icon" href="img/FF.png">
     <meta name="userid" content="{{ Auth::check() ? Auth::user()->userid : ''}}">
     <title>Sistema Ventas - Librería Europea</title>
@@ -26,11 +32,14 @@
         <button class="navbar-toggler sidebar-toggler d-md-down-none" type="button">
           <span class="navbar-toggler-icon"></span>
         </button>
+<<<<<<< HEAD
         <ul class="nav navbar-nav d-md-down-none">
             <li class="nav-item px-3">
                 <a class="nav-link" href="#">Panel Principal</a>
             </li>
         </ul>
+=======
+>>>>>>> b103eb9778c2ee67c5803410930ece04270e0611
         <ul class="nav navbar-nav ml-auto">
             <notification :notifications="notifications"></notification>
             <li class="nav-item dropdown">

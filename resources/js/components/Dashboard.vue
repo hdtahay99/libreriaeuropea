@@ -1,8 +1,6 @@
 <template>
 <main class="main">
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="/">Panel Principal</a></li>
-    </ol>
+    
     <div class="container-fluid">
         <div class="card">
             
@@ -56,6 +54,7 @@
 
 <script>
 export default {
+    props: ['ruta'],
     data(){
         return {
             varIngreso:null,
@@ -63,6 +62,8 @@ export default {
             ingresos:[],
             varTotalIngreso:[],
             varMesIngreso:[],
+
+
             varVenta:null,
             charVenta:null,
             ventas:[],
@@ -79,7 +80,7 @@ export default {
     methods:{
         getIngresos(){
             let me=this;
-            var url = '/dashboard';
+            var url = this.ruta + '/dashboard';
 
             axios.get(url).then(function (response) {
                 var respuesta = response.data;
@@ -93,7 +94,7 @@ export default {
 
         getVentas(){
             let me=this;
-            var url = '/dashboard';
+            var url = this.ruta + '/dashboard';
 
             axios.get(url).then(function (response) {
                 var respuesta = response.data;

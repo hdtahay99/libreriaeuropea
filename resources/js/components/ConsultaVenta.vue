@@ -1,8 +1,8 @@
 <template>
             <main class="main">
             <!-- Breadcrumb -->
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="/">Escritorio</a></li>
+             <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/EuropeaWeb/public/main">Escritorio</a></li>
             </ol>
             <div class="container-fluid">
                 <!-- Ejemplo de tabla Listado -->
@@ -187,6 +187,7 @@
 <script>
     import vSelect from 'vue-select';
     export default {
+        props: ['ruta'],
         data (){
             return {
                 facturaid: 0,
@@ -273,7 +274,7 @@
         methods : {
             listarFactura (page,buscar,criterio){
                 let me=this;
-                var url= '/factura?page=' + page + '&buscar='+ buscar + '&criterio='+ criterio;
+                var url= this.ruta + '/factura?page=' + page + '&buscar='+ buscar + '&criterio='+ criterio;
                 axios.get(url).then(function (response) {
                     var respuesta= response.data;
                     me.arrayFactura = respuesta.facturas.data;
@@ -285,7 +286,7 @@
             },
 
             pdfVenta(id){
-                window.open('http://libreriaeuropea.cu.ma/factura/pdf/'+id+','+'_blank');
+                window.open(this.ruta + '/factura/pdf/'+id+','+'_blank');
             },
 
             cambiarPagina(page,buscar,criterio){
@@ -307,7 +308,7 @@
                 
                 //Obtener los datos del ingreso
                 var arrayFacturaT=[];
-                var url= '/factura/obtenerCabecera?facturaid=' + id;
+                var url= this.ruta + '/factura/obtenerCabecera?facturaid=' + id;
                 
                 axios.get(url).then(function (response) {
                     var respuesta= response.data;
@@ -326,7 +327,7 @@
                 });
 
                 //Obtener los datos de los detalles 
-                var urld= '/factura/obtenerDetalles?facturaid=' + id;
+                var urld= this.ruta + '/factura/obtenerDetalles?facturaid=' + id;
                 
                 axios.get(urld).then(function (response) {
                     console.log(response);

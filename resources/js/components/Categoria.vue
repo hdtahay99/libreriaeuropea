@@ -2,8 +2,9 @@
  <main class="main">
             <!-- Breadcrumb -->
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="/">Escritorio</a></li>
+                <li class="breadcrumb-item"><a href="/EuropeaWeb/public/main">Escritorio</a></li>
             </ol>
+            
             <div class="container-fluid">
                 <!-- Ejemplo de tabla Listado -->
                 <div class="card">
@@ -113,7 +114,7 @@
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" @click="cerrarModal()">Cerrar</button>
                             <button type="button" v-if="tipoAccion == 1" @click="registrarCategoria()" class="btn btn-primary">Guardar</button>
-                            <button type="button" v-if="tipoAccion == 2" @click="actualizarCategoria()" class="btn btn-primary">Actualzar</button>
+                            <button type="button" v-if="tipoAccion == 2" @click="actualizarCategoria()" class="btn btn-primary">Actualizar</button>
                         </div>
                     </div>
                     <!-- /.modal-content -->
@@ -127,6 +128,7 @@
 
 <script>
     export default {
+        props: ['ruta'],
         data(){
             return{
                 categoriaid : 0,
@@ -185,7 +187,7 @@
         methods : {
             listarCategoria(page, buscar, criterio){
                 let me = this;
-                var url = '/categoria?page=' + page + '&buscar=' + buscar + '&criterio=' + criterio;
+                var url = this.ruta + '/categoria?page=' + page + '&buscar=' + buscar + '&criterio=' + criterio;
                 axios.get(url)
                 .then(function (response) {
                     var respuesta = response.data;
@@ -212,7 +214,7 @@
                 }
 
                 let me = this;
-                axios.post('/categoria/registrar',{
+                axios.post(this.ruta + '/categoria/registrar',{
                     'categoria_nombre' : this.categoria_nombre
                 }).then(function (response){
                     me.cerrarModal();
@@ -229,7 +231,7 @@
                 }
 
                 let me = this;
-                axios.put('/categoria/actualizar',{
+                axios.put(this.ruta + '/categoria/actualizar',{
                     'categoriaid' : this.categoriaid,
                     'categoria_nombre' : this.categoria_nombre
                 }).then(function (response){
@@ -260,7 +262,7 @@
                 if (result.value) {
 
                     let me = this;
-                    axios.put('/categoria/desactivar',{
+                    axios.put(this.ruta + '/categoria/desactivar',{
                         'categoriaid' : id
                     }).then(function (response){
                         me.listarCategoria(1,'','nombre');
@@ -303,7 +305,7 @@
                 if (result.value) {
 
                     let me = this;
-                    axios.put('/categoria/activar',{
+                    axios.put(this.ruta + '/categoria/activar',{
                         'categoriaid' : id
                     }).then(function (response){
                         me.listarCategoria(1,'','nombre');

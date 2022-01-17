@@ -2,16 +2,14 @@
  <main class="main">
             <!-- Breadcrumb -->
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="/">Escritorio</a></li>
+                <li class="breadcrumb-item"><a href="/EuropeaWeb/public/main">Escritorio</a></li>
             </ol>
+            
             <div class="container-fluid">
                 <!-- Ejemplo de tabla Listado -->
                 <div class="card">
                     <div class="card-header">
                         <i class="fa fa-align-justify"></i> Empleados
-                        <button type="button" @click="abrirModal('empleado','registrar')" class="btn btn-secondary" >
-                            <i class="icon-plus"></i>&nbsp;Nuevo
-                        </button>
                     </div>
                     <div class="card-body">
                         <div class="form-group row">
@@ -141,7 +139,7 @@
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" @click="cerrarModal()">Cerrar</button>
                             <button type="button" v-if="tipoAccion == 1" @click="registrarEmpleado()" class="btn btn-primary">Guardar</button>
-                            <button type="button" v-if="tipoAccion == 2" @click="actualizarEmpleado()" class="btn btn-primary">Actualzar</button>
+                            <button type="button" v-if="tipoAccion == 2" @click="actualizarEmpleado()" class="btn btn-primary">Actualizar</button>
                         </div>
                     </div>
                     <!-- /.modal-content -->
@@ -155,6 +153,7 @@
 
 <script>
     export default {
+        props: ['ruta'],
         data(){
             return{
                 empleadoid : 0,
@@ -216,7 +215,7 @@
         methods : {
             listarEmpleado(page, buscar, criterio){
                 let me = this;
-                var url = '/empleado?page=' + page + '&buscar=' + buscar + '&criterio=' + criterio;
+                var url = this.ruta +  '/empleado?page=' + page + '&buscar=' + buscar + '&criterio=' + criterio;
                 axios.get(url)
                 .then(function (response) {
                     var respuesta = response.data;
@@ -242,7 +241,7 @@
                 }
 
                 let me = this;
-                axios.post('/empleado/registrar',{
+                axios.post(this.ruta + '/empleado/registrar',{
                     'empleado_nombre' : this.empleado_nombre,
                     'empleado_apellido' : this.empleado_apellido,
                     'empleado_telefono' : this.empleado_telefono,
@@ -262,7 +261,7 @@
                 }
 
                 let me = this;
-                axios.put('/empleado/actualizar',{
+                axios.put(this.ruta + '/empleado/actualizar',{
                     'empleadoid' : this.empleadoid,
                     'empleado_nombre' : this.empleado_nombre,
                     'empleado_apellido' : this.empleado_apellido,
@@ -296,7 +295,7 @@
                 if (result.value) {
 
                     let me = this;
-                    axios.put('/empleado/desactivar',{
+                    axios.put(this.ruta + '/empleado/desactivar',{
                         'empleadoid' : id
                     }).then(function (response){
                         me.listarEmpleado(1,'','nombre');
@@ -336,7 +335,7 @@
                 if (result.value) {
 
                     let me = this;
-                    axios.put('/empleado/activar',{
+                    axios.put(this.ruta + '/empleado/activar',{
                         'empleadoid' : id
                     }).then(function (response){
                         me.listarEmpleado(1,'','nombre');

@@ -2,8 +2,9 @@
  <main class="main">
             <!-- Breadcrumb -->
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="/">Escritorio</a></li>
+                <li class="breadcrumb-item"><a href="/EuropeaWeb/public/main">Escritorio</a></li>
             </ol>
+            
             <div class="container-fluid">
                 <!-- Ejemplo de tabla Listado -->
                 <div class="card">
@@ -96,7 +97,7 @@
                         <div class="modal-header">
                             <h4 class="modal-title" v-text="tituloModal"></h4>
                             <button type="button" class="close" @click="cerrarModal()" aria-label="Close">
-                              <span aria-hidden="true">×</span>
+                              <span aria-hidden="true">x</span>
                             </button>
                         </div>
                         <div class="modal-body">
@@ -142,7 +143,7 @@
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" @click="cerrarModal()">Cerrar</button>
                             <button type="button" v-if="tipoAccion == 1" @click="registrarCliente()" class="btn btn-primary">Guardar</button>
-                            <button type="button" v-if="tipoAccion == 2" @click="actualizarCliente()" class="btn btn-primary">Actualzar</button>
+                            <button type="button" v-if="tipoAccion == 2" @click="actualizarCliente()" class="btn btn-primary">Actualizar</button>
                         </div>
                     </div>
                     <!-- /.modal-content -->
@@ -156,6 +157,7 @@
 
 <script>
     export default {
+        props: ['ruta'],
         data(){
             return{
                 clienteid : 0,
@@ -217,7 +219,7 @@
         methods : {
             listarCliente(page, buscar, criterio){
                 let me = this;
-                var url = '/cliente?page=' + page + '&buscar=' + buscar + '&criterio=' + criterio;
+                var url = this.ruta + '/cliente?page=' + page + '&buscar=' + buscar + '&criterio=' + criterio;
                 axios.get(url)
                 .then(function (response) {
                     var respuesta = response.data;
@@ -244,7 +246,7 @@
                 }
 
                 let me = this;
-                axios.post('/cliente/registrar',{
+                axios.post(this.ruta + '/cliente/registrar',{
                     'cliente_nombre' : this.cliente_nombre,
                     'cliente_apellido' : this.cliente_apellido,
                     'cliente_direccion' : this.cliente_direccion,
@@ -264,7 +266,7 @@
                 }
 
                 let me = this;
-                axios.put('/cliente/actualizar',{
+                axios.put(this.ruta + '/cliente/actualizar',{
                     'clienteid' : this.clienteid,
                     'cliente_nombre' : this.cliente_nombre,
                     'cliente_apellido' : this.cliente_apellido,
@@ -298,7 +300,7 @@
                 if (result.value) {
 
                     let me = this;
-                    axios.put('/cliente/desactivar',{
+                    axios.put(this.ruta + '/cliente/desactivar',{
                         'clienteid' : id
                     }).then(function (response){
                         me.listarCliente(1,'','nombre');
@@ -341,7 +343,7 @@
                 if (result.value) {
 
                     let me = this;
-                    axios.put('/cliente/activar',{
+                    axios.put(this.ruta + '/cliente/activar',{
                         'clienteid' : id
                     }).then(function (response){
                         me.listarCliente(1,'','nombre');

@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use App\Factura;
 use App\Detalle;
 use App\User;
+use App\Cliente;
 use App\Notifications\NotifyAdmin;
 
 class FacturaController extends Controller
@@ -25,7 +26,7 @@ class FacturaController extends Controller
             'facturas.factura_total','facturas.factura_pago',
             'facturas.factura_estado','facturas.condicion','empleados.empleado_nombre','empleados.empleado_apellido',
             'clientes.cliente_nombre','clientes.cliente_apellido','clientes.cliente_nit','clientes.cliente_direccion')
-            ->orderBy('facturas.facturaid','desc')->paginate(3);
+            ->orderBy('facturas.facturaid','desc')->paginate(8);
         }
         else{
             if($criterio == 'cliente_nit'){
@@ -36,7 +37,7 @@ class FacturaController extends Controller
                 'facturas.factura_estado','facturas.condicion','empleados.empleado_nombre','empleados.empleado_apellido',
                 'clientes.cliente_nombre','clientes.cliente_apellido','clientes.cliente_nit','clientes.cliente_direccion')
                 ->where('clientes.cliente_nit','like','%'.$buscar.'%')
-                ->orderBy('facturas.facturaid','desc')->paginate(3);
+                ->orderBy('facturas.facturaid','desc')->paginate(8);
             }
             else{
                 $facturas = Factura::join('empleados', 'facturas.empleadoid','=','empleados.empleadoid')
@@ -46,7 +47,7 @@ class FacturaController extends Controller
                 'facturas.factura_estado','facturas.condicion','empleados.empleado_nombre','empleados.empleado_apellido',
                 'clientes.cliente_nombre','clientes.cliente_apellido','clientes.cliente_nit','clientes.cliente_direccion')
                 ->where('facturas.'.$criterio, 'like', '%'.$buscar.'%')
-                ->orderBy('facturas.facturaid','desc')->paginate(3);
+                ->orderBy('facturas.facturaid','desc')->paginate(8);
             }
         }
 
@@ -115,18 +116,24 @@ class FacturaController extends Controller
 
     }
 
-    public function store(Request $request)
-    {
-        //Recibimos los datos del objeto request para insertarlo en la base de datos
+    public function store2(Request $request){
         if(!$request -> ajax()) return redirect('/');
         try{
             DB::beginTransaction();
 
+            $cliente = new Cliente();
+            $cliente->cliente_nombre = $request->cliente_nombre;
+            $cliente->cliente_apellido = $request->cliente_apellido;
+            $cliente->cliente_direccion = $request->cliente_direccion;
+            $cliente->cliente_nit = $request->cliente_nit;
+            $cliente->cliente_estado = '1';
+            $cliente->save();
+
             $mytime = Carbon::now('America/Guatemala');
             $factura = new Factura();
             $factura->empleadoid = \Auth::user()->userid;
-            $factura->clienteid = $request->clienteid;
-            $factura->factura_fecha = $mytime->toDateString();
+            $factura->clienteid = $cliente->clienteid;
+            $factura->factura_fecha = $mytime;
             $factura->factura_total = $request->factura_total;
             $factura->factura_pago = $request->factura_pago;
             $factura->factura_estado = 'Registrado';
@@ -144,31 +151,45 @@ class FacturaController extends Controller
                 $detalle->save();
             }
 
-            $fechaActual = date('Y-m-d');
-            $numVentas = DB::table('facturas')->whereDate('created_at', $fechaActual)->count();
-            $numProductos = DB::table('productos')
-            ->where('productos.producto_existencia','<','5')
-            ->where('productos.categoriaid','=','1')
-            ->where('productos.producto_estado','=','1')
-            ->count();
+            DB::commit();
 
-            $arregloDatos = [
-                'ventas' => [
-                    'numero' => $numVentas,
-                    'msj' => 'Ventas'
-                ],
-
-                'productos' => [
-                    'numero' => $numProductos,
-                    'msj' => 'Productos'
-                ]
+            return [
+                'facturaid' => $factura->facturaid
             ];
+        } catch(Exception $e){
+            DB::rollBack();
+        }
+    }
 
-            $allUsers = User::all();
+    public function store(Request $request)
+    {
+        //Recibimos los datos del objeto request para insertarlo en la base de datos
+        if(!$request -> ajax()) return redirect('/');
+        try{
+            DB::beginTransaction();
 
-            foreach ($allUsers as $notificar) {
-                User::findOrFail($notificar->userid)->notify(new NotifyAdmin($arregloDatos));
+            $mytime = Carbon::now('America/Guatemala');
+            $factura = new Factura();
+            $factura->empleadoid = \Auth::user()->userid;
+            $factura->clienteid = $request->clienteid;
+            $factura->factura_fecha = $mytime;
+            $factura->factura_total = $request->factura_total;
+            $factura->factura_pago = $request->factura_pago;
+            $factura->factura_estado = 'Registrado';
+            $factura->condicion = '1';
+            $factura->save();
+
+            $detalles = $request->data;
+
+            foreach($detalles as $ep => $det){
+                $detalle = new Detalle();
+                $detalle->facturaid = $factura->facturaid;
+                $detalle->productoid = $det['productoid'];
+                $detalle->detalle_cantidad = $det['detalle_cantidad'];
+                $detalle->detalle_monto = $det['detalle_monto'];
+                $detalle->save();
             }
+            
 
             DB::commit();
 
