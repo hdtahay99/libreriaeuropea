@@ -98,11 +98,12 @@
                                         <div class="form-inline">
                                             <input type="text" style="width: 50%" id="nit" v-model="cliente_nit" @keyup="buscarCliente(cliente_nit)" class="form-control" placeholder="Ingrese el nit del cliente"><br>
                                             <button v-if="editar==0" type="submit" @click="modificarCF()" class="btn btn-warning"><i class="icon-pencil"></i> </button>
+                                            <button v-if="editar==1" type="submit" @click="resetCF()" class="btn btn-primary"><i class="icon-action-undo"></i> </button>
                                         </div>
                                         <br>
-                                        <input :disabled="bandera ? true : false" type="text" style="width: 50%" id="cnombre" v-model="cliente_nombre"  class="form-control" placeholder="Ingrese el nombre del cliente"><br>
-                                        <input :disabled="bandera ? true : false" type="text" style="width: 50%" id="capellido" v-model="cliente_apellido"  class="form-control" placeholder="Ingrese el apellido del cliente"><br>
-                                        <input :disabled="bandera ? true : false" type="text" style="width: 50%" id="cdireccion" v-model="cliente_direccion"  class="form-control" placeholder="Ingrese la dirección del cliente">
+                                        <input :hidden="bandera ? true : false" :disabled="bandera ? true : false" type="text" style="width: 50%" id="cnombre" v-model="cliente_nombre"  class="form-control" placeholder="Ingrese el nombre del cliente"><br>
+                                        <input :hidden="bandera ? true : false" :disabled="bandera ? true : false" type="text" style="width: 50%" id="capellido" v-model="cliente_apellido"  class="form-control" placeholder="Ingrese el apellido del cliente"><br>
+                                        <input :hidden="bandera ? true : false" :disabled="bandera ? true : false" type="text" style="width: 50%" id="cdireccion" v-model="cliente_direccion"  class="form-control" placeholder="Ingrese la dirección del cliente">
                                     </div>
                                 </div>
 
@@ -121,12 +122,13 @@
                                     <div class="form-group">
                                         <label>Producto <span style="color:red;" v-show="productoid==0">(*Seleccione)</span></label>
                                         <div class="form-inline">
-                                            <input id="buscarpro" autofocus type="text" class="form-control" v-model="producto_barra" @keyup.enter="buscarProducto()" placeholder="Ingrese producto">
+                                            <input id="buscarpro" type="text" class="form-control" v-model="producto_barra" v-on:input="buscarProducto" placeholder="Ingrese producto">
                                             <button @click="abrirModal(1)"  class="btn btn-primary">...</button>
                                             <input type="text" style="width: 50%" readonly class="form-control" v-model="producto_nombre">
                                         </div>                                    
                                     </div>
                                 </div>
+                                <!--
                                 <div class="col-md-2">
                                     <div class="form-group">
                                         <label>Precio <span style="color:red;" v-show="producto_pventa==0">(*Ingrese)</span></label>
@@ -144,6 +146,7 @@
                                         <button @click="agregarDetalle()" class="btn btn-success form-control btnagregar"><i class="icon-plus"></i></button>
                                     </div>
                                 </div>
+                                -->
                             </div>
                             <div class="form-group row border">
                                 <div class="table-responsive col-md-12">
@@ -314,7 +317,7 @@
                         <div class="modal-header">
                             <h4 class="modal-title" v-text="tituloModal"></h4>
                             <button type="button" class="close" @click="cerrarModal()" aria-label="Close">
-                              <span aria-hidden="true">×</span>
+                              <span aria-hidden="true">x</span>
                             </button>
                         </div>
 
@@ -597,17 +600,27 @@
             },
             buscarProducto(){
                 let me=this;
+
+                if(!me.producto_barra.length)
+                {
+                    return;
+                }
+
                 var url= this.ruta + '/producto/buscarProductoVenta?filtro=' + me.producto_barra;
 
                 axios.get(url).then(function (response) {
                     var respuesta= response.data;
                     me.arrayProducto = respuesta.productos;
 
+                    console.log(me.arrayProducto);
+
                     if (me.arrayProducto.length>0){
                         me.producto_nombre=me.arrayProducto[0]['producto_nombre'];
                         me.productoid=me.arrayProducto[0]['productoid'];
                         me.producto_pventa = me.arrayProducto[0]['producto_pventa']
                         me.producto_existencia = me.arrayProducto[0]['producto_existencia'];
+                        me.cantidad = 1;
+                        me.agregarDetalle();
                     }
                     else{
                         me.producto_nombre='No existe artículo';
@@ -652,11 +665,29 @@
                 else{
                     if(me.encuentra(me.productoid)){
 
-                        Swal.fire({
-                            type: 'error',
-                            title: 'Oops...',
-                            text: '¡Este producto ya ha sido agregado!',
-                        })
+                        // Definir índice
+                        let idx = -1;
+
+                        // Buscar índice del producto existente
+                        idx = me.arrayDetalle.findIndex(p => p.productoid ===  me.productoid);
+
+                        if(idx >= 0)
+                        {
+                            if(parseInt(me.arrayDetalle[idx].detalle_cantidad) < me.producto_existencia){
+                                me.arrayDetalle[idx].detalle_cantidad = parseInt(me.arrayDetalle[idx].detalle_cantidad) + 1;
+                            }
+                            else {
+                                Swal.fire({
+                                    type: 'error',
+                                    title: 'Oops...',
+                                    text: 'Ya no hay más existencia para la venta',
+                                })
+                            }
+                        }
+
+                        me.producto_barra  = '';
+                        me.producto_nombre = '';
+                        document.getElementById('buscarpro').focus();
                     }
                     else{
                         if(me.cantidad > me.producto_existencia){
@@ -835,6 +866,16 @@
                 document.getElementById('nit').readOnly = true;
                 me.bandera = false;
             },
+            resetCF(){
+                let me = this;
+                me.editar = 0;
+                me.cliente_nombre = '';
+                me.cliente_apellido = '';
+                me.cliente_direccion = '';
+                document.getElementById('nit').readOnly = false;
+                me.bandera = true;
+                me.cliente_nit = 'c/f';
+            },
             mostrarDetalle(){
                 let me=this;
                 me.listado=0;
@@ -846,6 +887,11 @@
                 me.cantidad=0;
                 me.precio=0;
                 me.arrayDetalle=[];
+                me.focusInp = true;
+
+                setTimeout(() => {
+                    document.getElementById("buscarpro").focus();
+                }, 10);
             },
             ocultarDetalle(){
                 this.listado=1;
@@ -974,7 +1020,10 @@
         }
     }
 </script>
-<style>    
+<style>
+    .modal{
+        overflow-y: auto;
+    }    
     .modal-content{
         width: 100% !important;
         position: absolute !important;
@@ -982,7 +1031,7 @@
     .mostrar{
         display: list-item !important;
         opacity: 1 !important;
-        position: absolute !important;
+        position: fixed !important;
         background-color: #3c29297a !important;
     }
     .div-error{

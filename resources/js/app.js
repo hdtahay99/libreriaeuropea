@@ -47,10 +47,7 @@ const app = new Vue({
     data : {
         menu : 0,
         notifications : [],
-<<<<<<< HEAD
-=======
-        ruta : 'http://localhost:80/EuropeaWeb/public'
->>>>>>> b103eb9778c2ee67c5803410930ece04270e0611
+        ruta : 'http://127.0.0.1:8000'
     },
     created() {
         let me = this;

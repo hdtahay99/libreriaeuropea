@@ -2,17 +2,10 @@
             <nav class="sidebar-nav">
                 <ul class="nav">
                     <li @click="menu=0" class="nav-item">
-<<<<<<< HEAD
                         <a  class="nav-link active" href="#"><i class="icon-speedometer"></i> Panel Principal</a>
                     </li>
                     <li class="nav-title">
                         Navegaci&oacute;n Sistema
-=======
-                        <a  class="nav-link active" href="#"><i class="icon-speedometer"></i> Escritorio</a>
-                    </li>
-                    <li class="nav-title">
-                        Mantenimiento
->>>>>>> b103eb9778c2ee67c5803410930ece04270e0611
                     </li>
                     <li class="nav-item nav-dropdown">
                         <a class="nav-link nav-dropdown-toggle" href="#"><i class="icon-bag"></i> Almacén</a>
