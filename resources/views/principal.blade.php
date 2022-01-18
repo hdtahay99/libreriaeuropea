@@ -13,7 +13,7 @@
     <title>Sistema Ventas - Librería Europea</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- Icons -->
-    <link href="css/plantilla.css" rel="stylesheet">
+    <link href="{{url(mix('css/plantilla.css'))}}" rel="stylesheet">
 </head>
 
 <body class="app header-fixed sidebar-fixed aside-menu-fixed aside-menu-hidden">
@@ -72,8 +72,8 @@
     </footer>
     
 
-    <script src="js/app.js"></script>
-    <script src="js/plantilla.js"></script>
+    <script src="{{url(mix('js/app.js'))}}"></script>
+    <script src="{{url(mix('js/plantilla.js'))}}"></script>
 </body>
 
 </html>

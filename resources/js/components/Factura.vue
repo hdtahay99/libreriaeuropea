@@ -805,6 +805,7 @@
                             me.producto_barra = '';
                             me.arrayDetalle=[];
                             window.open(me.ruta + '/factura/pdf/'+response.data.facturaid);
+                            document.getElementById('buscarpro').focus();
                         }).catch(function (error){
                             console.log(error.data);
                         });
@@ -829,6 +830,7 @@
                             me.producto_barra = '';
                             me.arrayDetalle=[];
                             window.open(me.ruta + '/factura/pdf/'+response.data.facturaid);
+                            document.getElementById('buscarpro').focus();
 
                         }).catch(function (error) {
                             alert(error);
@@ -983,7 +985,7 @@
                 })
 
                 swalWithBootstrapButtons.fire({
-                title: '¿Está seguro de desactivar esta factura?',
+                title: '¿Está seguro de anular esta factura?',
                 type: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'Aceptar',
@@ -1026,7 +1028,7 @@
     }    
     .modal-content{
         width: 100% !important;
-        position: absolute !important;
+        position: fixed !important;
     }
     .mostrar{
         display: list-item !important;

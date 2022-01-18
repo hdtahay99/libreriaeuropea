@@ -581,7 +581,7 @@
     }
     .modal-content{
         width : 100% !important;
-        position: relative !important;
+        position: fixed !important;
     }
     .mostrar{
         display: list-item !important;

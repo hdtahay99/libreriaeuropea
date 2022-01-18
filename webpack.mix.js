@@ -15,9 +15,8 @@ mix.styles([
       'resources/plantilla/css/font-awesome.min.css',
       'resources/plantilla/css/simple-line-icons.min.css',
       'resources/plantilla/css/style.css'
-  ], 'public/css/plantilla.css');
-
-  mix.scripts([
+  ], 'public/css/plantilla.css').version()
+  .scripts([
    'resources/plantilla/js/jquery.min.js',
    'resources/plantilla/js/popper.min.js',
    'resources/plantilla/js/bootstrap.min.js',
@@ -25,6 +24,6 @@ mix.styles([
    'resources/plantilla/js/pace.min.js',
    'resources/plantilla/js/template.js',
    'resources/plantilla/js/sweetalert2.all.min.js'
-], 'public/js/plantilla.js')
-.js(['resources/js/app.js'], 'public/js/app.js');
+], 'public/js/plantilla.js').version()
+.js(['resources/js/app.js'], 'public/js/app.js').version();
 
