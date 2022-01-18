@@ -576,14 +576,17 @@
     }
 </script>
 <style>
+    .modal{
+        overflow-y: auto;
+    }
     .modal-content{
         width : 100% !important;
-        position: relative !important;
+        position: fixed !important;
     }
     .mostrar{
         display: list-item !important;
         opacity: 1 !important;
-        position: absolute !important;
+        position: fixed !important;
         background-color: #3c29297a !important;
     }
     .div-error{

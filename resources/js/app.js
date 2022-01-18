@@ -47,7 +47,7 @@ const app = new Vue({
     data : {
         menu : 0,
         notifications : [],
-        ruta : 'http://localhost:80/EuropeaWeb/public'
+        ruta : 'http://localhost:80/WebEuropea/public'
     },
     created() {
         let me = this;
