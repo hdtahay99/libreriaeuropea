@@ -2,7 +2,7 @@
  <main class="main">
             <!-- Breadcrumb -->
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="/EuropeaWeb/public/main">Panel Principal</a></li>
+                <li class="breadcrumb-item"><a href="/WebEuropea/public">Panel Principal</a></li>
             </ol>
             <div class="container-fluid">
                 <!-- Ejemplo de tabla Listado -->

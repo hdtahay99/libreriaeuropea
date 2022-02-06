@@ -2,7 +2,7 @@
             <main class="main">
             <!-- Breadcrumb -->
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="/EuropeaWeb/public/main">Escritorio</a></li>
+                <li class="breadcrumb-item"><a href="/WebEuropea/public">Escritorio</a></li>
             </ol>
             <div class="container-fluid">
                 <!-- Ejemplo de tabla Listado -->
@@ -391,7 +391,7 @@
                                 <div class="form-group row">
                                     <label class="col-md-3 form-control-label" for="text-input">Monto:</label>
                                     <div class="col-md-9">
-                                        <input type="number" step="any" v-model="factura_pago" @keyup.enter="registrarFactura(factura_pago)" class="form-control" placeholder="Ingrese el monto">
+                                        <input id="InMonto" type="number" step="any" v-model="factura_pago" @keyup.enter="registrarFactura(factura_pago)" class="form-control" placeholder="Ingrese el monto">
                                     </div>
                                 </div>
                             </div>
@@ -793,7 +793,7 @@
                             me.cliente_apellido = '';
                             me.cliente_direccion = '';
                             me.cliente_nit = 'c/f';
-                            me.buscarCliente(me.cliente_nit);
+                            me.buscarCliente(this.cliente_nit);
                             document.getElementById('nit').readOnly = false;
                             me.factura_total=0.0;
                             me.factura_pago=0.0;
@@ -831,6 +831,8 @@
                             me.arrayDetalle=[];
                             window.open(me.ruta + '/factura/pdf/'+response.data.facturaid);
                             document.getElementById('buscarpro').focus();
+                            me.cliente_nit = 'c/f';
+                            me.buscarCliente(me.cliente_nit);
 
                         }).catch(function (error) {
                             alert(error);
@@ -965,6 +967,10 @@
                     this.modal = 1;
                     this.tituloModal = 'Seleccione uno o varios productos';
                     this.listarProducto(1,'','');
+                    this.buscarA = '';
+                    setTimeout(() => {
+                        document.getElementById('textareaID1').focus();
+                    }, 10);
                 }
                 else{
                     if (this.validarFactura()){
@@ -972,6 +978,10 @@
                     }
                     this.modal = 2;
                     this.tituloModal = 'Ingrese el monto recibido por el cliente';
+                    this.factura_pago = '';
+                    setTimeout(() => {
+                        document.getElementById('InMonto').focus();
+                    }, 10);
                 }               
             },
 

@@ -4265,7 +4265,7 @@ __webpack_require__.r(__webpack_exports__);
             me.cliente_apellido = '';
             me.cliente_direccion = '';
             me.cliente_nit = 'c/f';
-            me.buscarCliente(me.cliente_nit);
+            me.buscarCliente(this.cliente_nit);
             document.getElementById('nit').readOnly = false;
             me.factura_total = 0.0;
             me.factura_pago = 0.0;
@@ -4302,6 +4302,8 @@ __webpack_require__.r(__webpack_exports__);
             me.arrayDetalle = [];
             window.open(me.ruta + '/factura/pdf/' + response.data.facturaid);
             document.getElementById('buscarpro').focus();
+            me.cliente_nit = 'c/f';
+            me.buscarCliente(me.cliente_nit);
           }).catch(function (error) {
             alert(error);
           });
@@ -4422,6 +4424,10 @@ __webpack_require__.r(__webpack_exports__);
         this.modal = 1;
         this.tituloModal = 'Seleccione uno o varios productos';
         this.listarProducto(1, '', '');
+        this.buscarA = '';
+        setTimeout(function () {
+          document.getElementById('textareaID1').focus();
+        }, 10);
       } else {
         if (this.validarFactura()) {
           return;
@@ -4429,6 +4435,10 @@ __webpack_require__.r(__webpack_exports__);
 
         this.modal = 2;
         this.tituloModal = 'Ingrese el monto recibido por el cliente';
+        this.factura_pago = '';
+        setTimeout(function () {
+          document.getElementById('InMonto').focus();
+        }, 10);
       }
     },
     desactivarFactura: function desactivarFactura(id) {
@@ -56033,6 +56043,7 @@ var render = function() {
                               ],
                               staticClass: "form-control",
                               attrs: {
+                                id: "InMonto",
                                 type: "number",
                                 step: "any",
                                 placeholder: "Ingrese el monto"
@@ -56083,7 +56094,7 @@ var staticRenderFns = [
     var _c = _vm._self._c || _h
     return _c("ol", { staticClass: "breadcrumb" }, [
       _c("li", { staticClass: "breadcrumb-item" }, [
-        _c("a", { attrs: { href: "/EuropeaWeb/public/main" } }, [
+        _c("a", { attrs: { href: "/WebEuropea/public" } }, [
           _vm._v("Escritorio")
         ])
       ])
@@ -57205,7 +57216,7 @@ var staticRenderFns = [
     var _c = _vm._self._c || _h
     return _c("ol", { staticClass: "breadcrumb" }, [
       _c("li", { staticClass: "breadcrumb-item" }, [
-        _c("a", { attrs: { href: "/EuropeaWeb/public/main" } }, [
+        _c("a", { attrs: { href: "/WebEuropea/public" } }, [
           _vm._v("Panel Principal")
         ])
       ])
@@ -71336,7 +71347,7 @@ var app = new Vue({
   data: {
     menu: 0,
     notifications: [],
-    ruta: 'http://127.0.0.1:8000'
+    ruta: 'http://localhost:80/WebEuropea/public'
   },
   created: function created() {
     var me = this;
@@ -72344,7 +72355,7 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! D:\hdtah\Documentos\Librería Europea\LibreriaEuropea_Web\EuropeaWeb\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! C:\xampp\htdocs\WebEuropea\resources\js\app.js */"./resources/js/app.js");
 
 
 /***/ })

@@ -24,10 +24,18 @@ class ProductoController extends Controller
         }
         else{
 
+            $searchValues = preg_split('/\s+/', $buscar, -1, PREG_SPLIT_NO_EMPTY);
+
             $productos = Producto::join('categorias', 'productos.categoriaid','=','categorias.categoriaid')
             ->select('productos.productoid','productos.categoriaid','productos.producto_barra','productos.producto_nombre','categorias.categoria_nombre','productos.producto_pcompra','productos.producto_pventa','productos.producto_existencia','productos.producto_imagen','productos.producto_estado')
-            ->where('productos.'.$criterio, 'like', '%'.$buscar.'%')
-            ->orderBy('productos.productoid','desc')->paginate(10);
+            ->where(function ($q) use ($searchValues, $criterio) {
+                foreach ($searchValues as $value) {
+                  $q->where('productos.'.$criterio, 'like', "%{$value}%");
+                }
+            })
+            //->where('productos.'.$criterio, 'like', '%'.$buscar.'%')
+            ->orderBy('productos.productoid','desc')
+            ->paginate(10);
         }
 
         return [
@@ -58,11 +66,19 @@ class ProductoController extends Controller
         }
         else{
 
+            $searchValues = preg_split('/\s+/', $buscar, -1, PREG_SPLIT_NO_EMPTY);
+
             $productos = Producto::join('categorias', 'productos.categoriaid','=','categorias.categoriaid')
             ->select('productos.productoid','productos.categoriaid','productos.producto_barra','productos.producto_nombre','categorias.categoria_nombre','productos.producto_pcompra','productos.producto_pventa','productos.producto_existencia','productos.producto_imagen','productos.producto_estado')
             ->where('productos.categoriaid', '=', $categoriaid)
-            ->where('productos.'.$criterio, 'like', '%'.$buscar.'%')
-            ->orderBy('productos.productoid','desc')->paginate(10);
+            ->where(function ($q) use ($searchValues, $criterio) {
+                foreach ($searchValues as $value) {
+                  $q->where('productos.'.$criterio, 'like', "%{$value}%");
+                }
+            })
+            //->where('productos.'.$criterio, 'like', '%'.$buscar.'%')
+            ->orderBy('productos.productoid','desc')
+            ->paginate(10);
         }
 
         return [
@@ -109,9 +125,16 @@ class ProductoController extends Controller
         }
         else{
 
+            $searchValues = preg_split('/\s+/', $buscar, -1, PREG_SPLIT_NO_EMPTY);
+
             $productos = Producto::join('categorias', 'productos.categoriaid','=','categorias.categoriaid')
             ->select('productos.productoid','productos.categoriaid','productos.producto_barra','productos.producto_nombre','categorias.categoria_nombre','productos.producto_pcompra','productos.producto_pventa','productos.producto_existencia','productos.producto_imagen','productos.producto_estado')
-            ->where('productos.'.$criterio, 'like', '%'.$buscar.'%')
+            //->where('productos.'.$criterio, 'like', '%'.$buscar.'%')
+            ->where(function ($q) use ($searchValues, $criterio) {
+                foreach ($searchValues as $value) {
+                  $q->where('productos.'.$criterio, 'like', "%{$value}%");
+                }
+            })
             ->where('productos.producto_existencia','>','0')
             ->where('productos.producto_estado','=','1')
             ->orderBy('productos.productoid','desc')->paginate(3);
