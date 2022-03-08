@@ -128,6 +128,13 @@
                                         </div>                                    
                                     </div>
                                 </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <button @click="agregarTemporal()" class="btn btn-warning form-control btnagregar">
+                                            <i class="icon-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
                                 <!--
                                 <div class="col-md-2">
                                     <div class="form-group">
@@ -160,10 +167,10 @@
                                                 <th>Subtotal</th>
                                             </tr>
                                         </thead>
-                                        <tbody v-if="arrayDetalle.length">
+                                        <tbody v-if="arrayDetalle.length || arrayTemp.length">
                                             <tr v-for="(detalle,index) in arrayDetalle" :key="detalle.detalleid">
                                                 <td>
-                                                    <button @click="eliminarDetalle(index)" type="button" class="btn btn-danger btn-sm">
+                                                   <button @click="eliminarDetalle(index)" type="button" class="btn btn-danger btn-sm">
                                                         <i class="icon-close"></i>
                                                     </button>
                                                 </td>
@@ -175,6 +182,27 @@
                                                 </td>
                                                 <td>
                                                     <span style="color:red;" v-show="detalle.detalle_cantidad>detalle.producto_existencia">Existencia: {{detalle.producto_existencia}}</span>
+                                                    <input v-model="detalle.detalle_cantidad"  type="number" value="2" class="form-control">
+                                                </td>
+                                                <td>
+                                                    {{detalle.detalle_monto*detalle.detalle_cantidad}}
+                                                </td>
+                                            </tr>
+
+                                            <tr v-for="(detalle, index) in arrayTemp" :key="detalle.productoid">
+                                                <td>
+                                                    <button @click="eliminarTemporal(index)" type="button" class="btn btn-danger btn-sm">
+                                                        <i class="icon-close"></i>
+                                                    </button>
+                                                </td>
+                                                <td>
+                                                    <input v-model="detalle.producto_nombre" type="text" class="form-control">
+                                                </td>
+                                                <td>
+                                                    <span style="color:red;" v-show="detalle.detalle_monto <= 0">No puede ser posible el monto ingresado</span>
+                                                    <input v-model="detalle.detalle_monto" step="any" type="number"  value="3" class="form-control">
+                                                </td>
+                                                <td>
                                                     <input v-model="detalle.detalle_cantidad"  type="number" value="2" class="form-control">
                                                 </td>
                                                 <td>
@@ -269,7 +297,7 @@
                                                 <th>Subtotal</th>
                                             </tr>
                                         </thead>
-                                        <tbody v-if="arrayDetalle.length">
+                                        <tbody v-if="arrayDetalle.length || arrayTemp.length">
                                             <tr v-for="detalle in arrayDetalle" :key="detalle.detalleid">
                                                 <td v-text="detalle.producto_nombre">
                                                 </td>
@@ -281,6 +309,19 @@
                                                 </td>
                                                 <td>
                                                     {{detalle.detalle_monto*detalle.detalle_cantidad}}
+                                                </td>
+                                            </tr>
+                                            <tr v-for="detalle in arrayTemp" :key="detalle.detempid">
+                                                <td v-text="detalle.temporal_producto">
+                                                </td>
+                                                <td v-text="detalle.temporal_monto">
+                                                </td>
+                                                <td v-text="detalle.temporal_monto">
+                                                </td>
+                                                <td v-text="detalle.temporal_cantidad">
+                                                </td>
+                                                <td>
+                                                    {{detalle.temporal_monto*detalle.temporal_cantidad}}
                                                 </td>
                                             </tr>
                                             <tr style="background-color: #CEECF5;">
@@ -351,9 +392,17 @@
                                         <tbody>
                                             <tr v-for="producto in arrayProducto" :key="producto.productoid">
                                                 <td>
-                                                    <button type="button" @click="agregarDetalleModal(producto)" class="btn btn-success btn-sm">
-                                                    <i class="icon-check"></i>
-                                                    </button>
+                                                    <template v-if="isExistItem(producto.productoid, 1)">
+                                                        <button v-if="producto.producto_existencia > 0" type="button" @click="isExistItem(producto.productoid, 2)" class="btn btn-danger btn-sm">
+                                                            <i class="icon-trash"></i>
+                                                        </button>
+                                                    </template>
+
+                                                    <template v-else>
+                                                        <button v-if="producto.producto_existencia > 0" type="button" @click="agregarDetalleModal(producto)" class="btn btn-success btn-sm">
+                                                            <i class="icon-check"></i>
+                                                        </button>
+                                                    </template>
                                                 </td>
                                                 <td v-text="producto.categoria_nombre"></td>
                                                 <td v-text="producto.producto_barra"></td>
@@ -427,6 +476,7 @@
                 arrayCliente: [],
                 consumidor_final: null,
                 arrayDetalle : [],
+                arrayTemp    : [],
                 listado:1,
                 modal : 0,
                 tituloModal : '',
@@ -528,10 +578,16 @@
                 return pagesArray;
             },
             calcularTotal: function(){
-                var resultado=0.0;
-                for(var i=0;i<this.arrayDetalle.length;i++){
-                    resultado=resultado+(this.arrayDetalle[i].detalle_monto*this.arrayDetalle[i].detalle_cantidad)
+                let resultado=0.0;
+                
+                for(let i=0;i<this.arrayDetalle.length;i++){
+                    resultado=resultado+(this.arrayDetalle[i].detalle_monto*this.arrayDetalle[i].detalle_cantidad);
                 }
+
+                for (let i = 0; i < this.arrayTemp.length; i++) {
+                    resultado = resultado + (this.arrayTemp[i].detalle_monto*this.arrayTemp[i].detalle_cantidad);
+                }
+
                 this.factura_total = resultado;
                 return resultado;
             }
@@ -658,6 +714,60 @@
                 let me = this;
                 me.arrayDetalle.splice(index, 1);
             },
+            eliminarTemporal(index)
+            {
+                let me = this;
+                me.arrayTemp.splice(index, 1);
+            },
+            isExistItem(id, opt)
+            {
+                let me    = this;
+                const idx = me.arrayDetalle.map(detalle => detalle.productoid).indexOf(id);
+                
+                if(opt == 1) 
+                {
+                    if(idx >= 0)
+                    {
+                        return true;
+                    }
+                }
+                    
+                if(opt == 2)
+                {
+                    me.arrayDetalle.splice(idx, 1);
+                }
+            },
+            agregarTemporal(){
+
+                let me = this;
+
+                // Validar si hay un registro sin haber asignado data
+
+                let cond = false;
+                me.arrayTemp.forEach(temp => {
+                    
+                    if(temp.producto_nombre == '' || 
+                       temp.producto_nombre.length == 0 || 
+                       temp.detalle_monto == 0)
+                    {
+                        cond = true;
+                        return;
+                    }
+
+                });
+
+                if(!cond)
+                {
+                    me.arrayTemp.push({
+                        productoid: new Date().getTime(),
+                        producto_nombre: '',
+                        detalle_cantidad: 1,
+                        detalle_monto: 0
+                    });
+                }
+                                            
+
+            },
             agregarDetalle(){
                 let me=this;
                 if(me.productoid==0 || me.cantidad==0 || me.producto_pventa==0){
@@ -782,7 +892,8 @@
                             'cliente_direccion': this.cliente_direccion,
                             'factura_total': this.factura_total,
                             'factura_pago' : this.factura_pago,
-                            'data': this.arrayDetalle
+                            'data': this.arrayDetalle,
+                            'temporal': this.arrayTemp
                         }).then(function (response) {
                             me.listado=0;
                             me.editar = 0;
@@ -804,7 +915,8 @@
                             me.producto_pventa = 0;
                             me.producto_barra = '';
                             me.arrayDetalle=[];
-                            window.open(me.ruta + '/factura/pdf/'+response.data.facturaid);
+                            me.arrayTemp=[];
+                            //window.open(me.ruta + '/factura/pdf/'+response.data.facturaid);
                             document.getElementById('buscarpro').focus();
                         }).catch(function (error){
                             console.log(error.data);
@@ -814,8 +926,8 @@
                             'clienteid': this.clienteid,
                             'factura_total': this.factura_total,
                             'factura_pago' : this.factura_pago,
-                            'data': this.arrayDetalle
-
+                            'data': this.arrayDetalle,
+                            'temporal': this.arrayTemp
                         }).then(function (response) {
                             me.listado=0;
                             me.listarFactura(1,'','');
@@ -829,7 +941,8 @@
                             me.producto_pventa = 0;
                             me.producto_barra = '';
                             me.arrayDetalle=[];
-                            window.open(me.ruta + '/factura/pdf/'+response.data.facturaid);
+                            me.arrayTemp=[];
+                            //window.open(me.ruta + '/factura/pdf/'+response.data.facturaid);
                             document.getElementById('buscarpro').focus();
                             me.cliente_nit = 'c/f';
                             me.buscarCliente(me.cliente_nit);
@@ -849,13 +962,33 @@
 
                 me.arrayDetalle.map(function(x){
                     if(x.detalle_cantidad > x.producto_existencia){
-                        producto = x.producto_nombre + " con stock insuficiente";
+                        producto = x.producto_nombre + " sin existencia suficiente";
                         me.errorMostrarMsjFactura.push(producto);
                     }
                 });
 
+                me.arrayTemp.map(function(item){
+
+                    if(item.detalle_cantidad == 0)
+                    {
+                        me.errorMostrarMsjFactura.push("Revise la cantidad de los productos a vender");                    
+                    }
+
+                    
+                    if(item.detalle_monto == 0)
+                    {
+                        me.errorMostrarMsjFactura.push("Revise que exista un precio de los productos a vender");                    
+                    }
+
+                    if(item.producto_nombre == '' || item.producto_nombre.length == 0)
+                    {
+                        me.errorMostrarMsjFactura.push("Revise que exista un nombre de los productos a vender");                    
+                    }
+
+                });
+
                 if (this.clienteid==0) this.errorMostrarMsjFactura.push("Es necesario seleccionar un cliente para la venta.");
-                if (this.arrayDetalle.length<=0) this.errorMostrarMsjFactura.push("Ingrese productos al detalle.");
+                if (this.arrayDetalle.length<=0 && this.arrayTemp.length<=0 ) this.errorMostrarMsjFactura.push("Ingrese productos al detalle.");
 
                 if (this.errorMostrarMsjFactura.length) this.errorFactura = 1;
 
@@ -891,9 +1024,12 @@
                 me.cantidad=0;
                 me.precio=0;
                 me.arrayDetalle=[];
+                me.arrayTemp=[];
+                me.errorMostrarMsjFactura = [];
                 me.focusInp = true;
 
                 setTimeout(() => {
+                    document.getElementById('nit').readOnly = false;
                     document.getElementById("buscarpro").focus();
                 }, 10);
             },
@@ -909,7 +1045,7 @@
                 this.cliente_direccion = '';
                 this.cliente_nit = 'c/f';
                 this.buscarCliente(this.cliente_nit);
-                document.getElementById('nit').readOnly = false;
+                //document.getElementById('nit').readOnly = false;
                 this.factura_total=0.0;
                 this.factura_pago=0.0;
                 this.productoid=0;
@@ -919,6 +1055,7 @@
                 this.producto_pventa = 0;
                 this.producto_barra = '';
                 this.arrayDetalle=[];
+                this.arrayTemp=[];
             },
             verFactura(id){
                 let me=this;
@@ -949,9 +1086,9 @@
                 var urld= this.ruta + '/factura/obtenerDetalles?facturaid=' + id;
                 
                 axios.get(urld).then(function (response) {
-                    console.log(response);
                     var respuesta= response.data;
                     me.arrayDetalle = respuesta.detalles;
+                    me.arrayTemp = respuesta.temporales;
                 })
                 .catch(function (error) {
                     console.log(error);

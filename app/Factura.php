@@ -31,4 +31,9 @@ class Factura extends Model
     {
         return $this->hasMany('App\Detalle');
     }
+
+    public function detalletemp()
+    {
+        return $this->hasMany('App\DetalleTemporal');
+    }
 }

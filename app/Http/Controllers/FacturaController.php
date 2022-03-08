@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Factura;
 use App\Detalle;
+use App\DetalleTemporal;
 use App\User;
 use App\Cliente;
 use App\Notifications\NotifyAdmin;
@@ -101,6 +102,18 @@ class FacturaController extends Controller
         return $pdf->download('factura-'.$numfactura[0]->facturaid.'.pdf');
     }
 
+    public function dailyReport(Request $request, $date)
+    {
+        $ventas = DB::table('facturas as f')
+                        ->select(DB::raw('SUM(f.factura_total) as total'))
+                        ->whereDate('f.factura_fecha',$date)
+                        ->where('f.condicion', '=', '1')
+                        ->get();
+
+        $pdf = \PDF::loadView('pdf.dailysale',['ventas' => $ventas, 'fecha' => $date]);
+        return $pdf->download('factura-'.$date.'.pdf');
+    }
+
     public function obtenerDetalles(Request $request){
         if(!$request -> ajax()) return redirect('/');
 
@@ -112,7 +125,11 @@ class FacturaController extends Controller
         ->where('detalles.facturaid','=',$facturaid)
         ->orderBy('detalles.detalleid','desc')->get();
 
-        return ['detalles' => $detalles];
+        $temporales = DetalleTemporal::where('facturaid','=',$facturaid)
+        ->where('estado', '=', '1')
+        ->orderBy('detempid','desc')->get();
+
+        return ['detalles' => $detalles, 'temporales' => $temporales];
 
     }
 
@@ -140,7 +157,8 @@ class FacturaController extends Controller
             $factura->condicion = '1';
             $factura->save();
 
-            $detalles = $request->data;
+            $detalles   = $request->data;
+            $temporales = $request->temporal;
 
             foreach($detalles as $ep => $det){
                 $detalle = new Detalle();
@@ -149,6 +167,17 @@ class FacturaController extends Controller
                 $detalle->detalle_cantidad = $det['detalle_cantidad'];
                 $detalle->detalle_monto = $det['detalle_monto'];
                 $detalle->save();
+            }
+
+            foreach($temporales as $temp)
+            {
+                $detemp                    = new DetalleTemporal();
+                $detemp->facturaid         = $factura->facturaid;
+                $detemp->temporal_producto = $temp['producto_nombre'];
+                $detemp->temporal_monto    = $temp['detalle_monto'];
+                $detemp->temporal_cantidad = $temp['detalle_cantidad'];
+                $detemp->estado            = '1';
+                $detemp->save();
             }
 
             DB::commit();
@@ -179,7 +208,8 @@ class FacturaController extends Controller
             $factura->condicion = '1';
             $factura->save();
 
-            $detalles = $request->data;
+            $detalles   = $request->data;
+            $temporales = $request->temporal;
 
             foreach($detalles as $ep => $det){
                 $detalle = new Detalle();
@@ -188,6 +218,17 @@ class FacturaController extends Controller
                 $detalle->detalle_cantidad = $det['detalle_cantidad'];
                 $detalle->detalle_monto = $det['detalle_monto'];
                 $detalle->save();
+            }
+
+            foreach($temporales as $temp)
+            {
+                $detemp                    = new DetalleTemporal();
+                $detemp->facturaid         = $factura->facturaid;
+                $detemp->temporal_producto = $temp['producto_nombre'];
+                $detemp->temporal_monto    = $temp['detalle_monto'];
+                $detemp->temporal_cantidad = $temp['detalle_cantidad'];
+                $detemp->estado            = '1';
+                $detemp->save();
             }
             
 

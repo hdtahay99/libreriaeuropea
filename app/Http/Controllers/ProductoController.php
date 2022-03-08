@@ -119,7 +119,7 @@ class ProductoController extends Controller
         if($buscar==''){
             $productos = Producto::join('categorias', 'productos.categoriaid','=','categorias.categoriaid')
             ->select('productos.productoid','productos.categoriaid','productos.producto_barra','productos.producto_nombre','categorias.categoria_nombre','productos.producto_pcompra','productos.producto_pventa','productos.producto_existencia','productos.producto_imagen','productos.producto_estado')
-            ->where('productos.producto_existencia','>','0')
+            //->where('productos.producto_existencia','>','0')
             ->where('productos.producto_estado','=','1')
             ->orderBy('productos.productoid','desc')->paginate(3);
         }
@@ -135,7 +135,7 @@ class ProductoController extends Controller
                   $q->where('productos.'.$criterio, 'like', "%{$value}%");
                 }
             })
-            ->where('productos.producto_existencia','>','0')
+            //->where('productos.producto_existencia','>','0')
             ->where('productos.producto_estado','=','1')
             ->orderBy('productos.productoid','desc')->paginate(3);
         }

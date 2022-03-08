@@ -25,6 +25,7 @@ class DashboardController extends Controller
         DB::raw('YEAR(f.factura_fecha) as anio'),
         DB::raw('SUM(f.factura_total) as total'))
         ->whereYear('f.factura_fecha',$anio)
+        ->where('f.condicion', '=', '1')
         ->groupBy(DB::raw('MONTH(f.factura_fecha)'),DB::raw('YEAR(f.factura_fecha)'))
         ->get();
 

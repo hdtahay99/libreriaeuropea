@@ -37,11 +37,19 @@
             </template>
 
             <template v-if="menu==10">
-              <consultaventa :ruta="ruta"></consultaventa>
+              <dailysale :ruta="ruta"></dailysale>
             </template>
 
             <template v-if="menu==11">
               <productoagotado :ruta="ruta"></productoagotado>
+            </template>
+
+            <template v-if="menu==12">
+              <compra :ruta="ruta"></compra>
+            </template>
+
+            <template v-if="menu==13">
+              <NuevaCompra :ruta="ruta"></NuevaCompra>
             </template>
         @elseif(Auth::user()->rolid == 2)
             <template v-if="menu==3">

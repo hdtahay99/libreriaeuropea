@@ -32,7 +32,9 @@ Vue.component('dashboard', require('./components/Dashboard.vue').default);
 Vue.component('consultaventa', require('./components/ConsultaVenta.vue').default);
 Vue.component('notification', require('./components/Notification.vue').default);
 Vue.component('productoagotado', require('./components/productoagotado.vue').default);
-
+Vue.component('compra', require('./components/Compra/ListComponent.vue').default);
+Vue.component('NuevaCompra', require('./components/Compra/NewComponent.vue').default);
+Vue.component('dailysale', require('./components/DailySale.vue').default);
 
 
 
@@ -47,7 +49,8 @@ const app = new Vue({
     data : {
         menu : 0,
         notifications : [],
-        ruta : 'http://localhost:80/WebEuropea/public'
+        //ruta : 'http://localhost:80/WebEuropea/public'
+        ruta: ''
     },
     created() {
         let me = this;

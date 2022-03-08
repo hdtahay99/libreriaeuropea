@@ -95,6 +95,10 @@ Route::group(['middleware' => ['auth']], function(){
         Route::get('/factura/pdf/{facturaid}', 'FacturaController@pdf')->name('pdf');
         Route::get('/dashboard', 'DashboardController');
 
+        Route::get('/reporte/ventas/daily/{date}', 'FacturaController@dailyReport')->name('dailysale');
+
+        Route::get('/compra', 'CompraController@index');
+
     });    
     
 });

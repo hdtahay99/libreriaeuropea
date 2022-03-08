@@ -67,8 +67,7 @@
     </div>   
     </div>
     <footer class="app-footer">
-        <span><a href="#">Librería Europea</a> &copy; 2019</span>
-        <span class="ml-auto">Desarrollado por <a href="#">Tomatu100</a></span>
+        <span><a href="#">Librería Europea</a> &copy; <?php echo date("Y"); ?></span>
     </footer>
     
 

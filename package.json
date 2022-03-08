@@ -26,9 +26,11 @@
     },
     "dependencies": {
         "laravel-echo": "^1.5.3",
+        "moment": "^2.29.1",
         "pusher-js": "^4.4.0",
         "sweetalert2": "^8.8.7",
         "vue-barcode": "^1.2.0",
-        "vue-select": "^2.4.0"
+        "vue-select": "^2.4.0",
+        "vuejs-datepicker": "^1.6.2"
     }
 }
